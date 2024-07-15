@@ -155,8 +155,9 @@ def view_records(vehicle = '*', column = 'id', updown = 'ASC'):
 def sql_query_func():
     con = db_con()
     try:
-        con.execute(request.form.get('sql_line'))
+        result = con.execute(request.form.get('sql_line'))
         db_clo(con)
+        print(list(result))
         return 'success'
     except:
         db_clo(con)
