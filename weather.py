@@ -3,7 +3,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
-API_KEY = 'caa03e32dc86bf6409e508773f02425e'
+API_KEY = 'oops'
 API_URL = 'http://api.openweathermap.org/data/2.5/weather?zip={},GB&mode=json&units=metric&appid={}'
 
 def query_api(zip):
