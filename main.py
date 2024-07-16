@@ -12,13 +12,6 @@ def add_record():
 
     return render_template('add_record.html', vehicles = vehicles)
 
-# @app.route('/import-records')
-# def view_records():
-#     if database.import_records() == True:
-#         return '<h1>Success</h1>'
-#     else:
-#         return '<h1>Failed</h1>'
-
 @app.route('/view-records', methods=['GET', 'POST'])
 def view_records():
     columns = database.get_columns()

@@ -1,4 +1,7 @@
-<body>
+{% extends "base.html" %} 
+{% block title %}Add Record{% endblock %}
+
+{% block content %}
     <h1>Add Record</h1>
     <form method="post">
         Date:<br>
@@ -17,4 +20,4 @@
         <input type="text" name="cost" id="cost"  placeholder="Cost"><br>
         <button type="submit">Submit</button>
     </form>
-</body>
+{% endblock %}

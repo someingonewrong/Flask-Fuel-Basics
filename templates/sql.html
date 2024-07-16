@@ -1,5 +1,11 @@
-<h1>SQL Query</h1>
-<form method="post">
-<input type="text" name="sql_line" id="sql_line" placeholder="SQL Query"><br>
-<button type="submit">Submit</button>
-</form>
+{% extends "base.html" %} 
+{% block title %}SQL Query{% endblock %}
+{% block content%}
+
+    <h1>SQL Query</h1>
+    <form method="post">
+        <input type="text" name="sql_line" id="sql_line" placeholder="SQL Query"><br>
+        <button type="submit">Submit</button>
+    </form>
+
+{% endblock %}
