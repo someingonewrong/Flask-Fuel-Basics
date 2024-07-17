@@ -16,13 +16,10 @@ class Record:
 
         con = db_con()
         con.execute(table_input, inputs)
-        db_clo(con)
+        con.commit()
 
 def db_con():
     return sqlite3.connect("fuel_tracker.db")
-
-def db_clo(con):
-    con.commit()
 
 def create_table():
     con = db_con()
@@ -34,14 +31,16 @@ def create_table():
                 litres INTEGER, 
                 cost INTEGER, 
                 currency TEXT)""")
-    db_clo(con)
+    con.commit()
 
 def get_vehicles():
     try:
         con = db_con()
         query = 'SELECT DISTINCT vehicle FROM tracker'
         vehicles = con.execute(query)
-        db_clo(con)
+        con.commit(
+
+        )
         vehicle_text = []
         for vehic in vehicles:
             vehicle_text.append(vehic[0])
@@ -55,7 +54,9 @@ def get_columns():
         con = db_con()
         query = "SELECT group_concat(name) FROM pragma_table_info('tracker')"  
         columns = list(con.execute(query))[0]
-        db_clo(con)
+        con.commit(
+
+        )
         columns_text = []
         for column in columns[0].split(','):
             columns_text.append(column)
@@ -69,7 +70,7 @@ def get_last_mileage(vehicle):
         con = db_con()
         query = f"SELECT mileage FROM tracker WHERE vehicle = '{vehicle}' ORDER BY mileage DESC"
         mileage = con.execute(query).fetchone()[0]
-        db_clo(con)
+        con.commit()
         return mileage
     except:
         return 0
@@ -128,7 +129,7 @@ def check_input(record):
     try:
         mileage_last = con.execute("SELECT mileage FROM tracker WHERE vehicle = '{}' ORDER BY mileage DESC LIMIT 1".format(record.vehicle)).fetchone()[0]
     except: pass
-    db_clo(con)
+    con.commit()
 
     for item in temp:
         vehicles.append(item[0])
@@ -162,16 +163,16 @@ def view_records(vehicle = '*', column = 'id', updown = 'ASC'):
     else:
         query = f'SELECT * FROM tracker WHERE vehicle = \'{vehicle}\' ORDER BY {column} {updown}'
     table = list(con.execute(query))
-    db_clo(con)
+    con.commit()
     return table
 
 def sql_query_func():
     con = db_con()
     try:
         result = con.execute(request.form.get('sql_line'))
-        db_clo(con)
+        con.commit()
         print(list(result))
         return ['sql success']
     except:
-        db_clo(con)
+        con.commit()
         return ['sql failed']
