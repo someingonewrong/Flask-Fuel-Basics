@@ -81,7 +81,7 @@ def post_record():
                     request.form.get('mileage'),
                     request.form.get('litres'),
                     request.form.get('cost'),
-                    'GBP')
+                    request.form.get('currency'))
 
     error_message = []
 
@@ -124,6 +124,7 @@ def int_convert(input):
 def check_input(record):
     con = db_con()
     temp = list(con.execute("SELECT DISTINCT vehicle FROM tracker"))
+    url = str(request.base_url.split('/')[-1])
     vehicles = []
     error_message = []
     try:
@@ -134,11 +135,12 @@ def check_input(record):
     for item in temp:
         vehicles.append(item[0])
 
-    if record.vehicle not in vehicles: 
-        error_message.append('Somehow you\'ve inputted an invalid vehicle')
+    if url != 'new-vehicle':
+        if record.vehicle not in vehicles: 
+            error_message.append('Somehow you\'ve inputted an invalid vehicle')
 
-    if mileage_last > int(record.mileage):
-        error_message.append('Mileage can not be smaller than the last mileage: ' + str(mileage_last))
+        if mileage_last > int(record.mileage):
+            error_message.append('Mileage can not be smaller than the last mileage: ' + str(mileage_last))
     
     try: record.litres = int_convert(record.litres)
     except: error_message.append('Litres could not be convertered to required format')

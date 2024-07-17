@@ -4,6 +4,10 @@ from flask import Flask, render_template, request, flash
 app = Flask(__name__)
 app.secret_key = "don't_look_at_me"
 
+@app.route('/')
+def home():
+    return render_template('home.html')
+
 @app.route('/add-record', methods=['GET', 'POST'])
 def add_record():
     if request.method == 'POST':
@@ -16,6 +20,17 @@ def add_record():
     vehicles = database.get_vehicles()
 
     return render_template('add_record.html', vehicles = vehicles)
+
+@app.route('/new-vehicle', methods=['GET', 'POST'])
+def new_vehicle():
+    if request.method == 'POST':
+        result = database.post_record()
+        if result[0] == 'Data Added: ':
+            flash(result, category='message')
+        else:
+            flash(result, category='error')
+
+    return render_template('new_vehicle.html')
 
 @app.route('/view-records', methods=['GET', 'POST'])
 def view_records():
@@ -43,9 +58,9 @@ def sql_query():
 
     return render_template('sql.html')
 
-@app.route('/')
-def home():
-    return render_template('home.html')
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 if __name__ == '__main__':
     database.create_table()
