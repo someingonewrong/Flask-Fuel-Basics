@@ -16,9 +16,10 @@
         />
 
         <title>{% block title %}Home{% endblock %}</title>
-        
+
         {% block head_ext %}{% endblock %}
     </head>
+    
 
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -39,6 +40,32 @@
                 </div>
             </div>
         </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <div class="alert alert-danger alter-dismissable fade show" role="alert">
+                            {% for line in message %}
+                                {{ line }}<br>
+                            {% endfor %}
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success alter-dismissable fade show" role="alert">
+                            {% for line in message %}
+                                {{ line }}<br>
+                            {% endfor %}
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
         <div class="container">{% block content %} {% endblock %}</div>
         <script

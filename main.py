@@ -1,12 +1,17 @@
 import database
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 
 app = Flask(__name__)
+app.secret_key = "don't_look_at_me"
 
 @app.route('/add-record', methods=['GET', 'POST'])
 def add_record():
     if request.method == 'POST':
-        print(database.post_record())
+        result = database.post_record()
+        if result[0] == 'Data Added: ':
+            flash(result, category='message')
+        else:
+            flash(result, category='error')
 
     vehicles = database.get_vehicles()
 
@@ -30,9 +35,17 @@ def view_records():
 @app.route('/sql', methods=['GET', 'POST'])
 def sql_query():
     if request.method == 'POST':
-        print(database.sql_query_func())
+        result = database.sql_query_func()
+        if result[0] == 'sql success':
+            flash(result, category='message')
+        else:
+            flash(result, category='error')
 
     return render_template('sql.html')
+
+@app.route('/')
+def home():
+    return render_template('home.html')
 
 if __name__ == '__main__':
     database.create_table()
