@@ -1,0 +1,27 @@
+{% extends "base.html" %} 
+{% block title %}Add Record{% endblock %}
+
+{% block content %}
+    <h1>Add Record</h1>
+    <form method="post">
+        Date:<br>
+        <input type="date" id="date" name="date"><br>
+        Vehicle:<br>
+        <select name="vehicle" id="vehicle">
+            {% for vehicle in vehicles %}
+                <option value="{{vehicle}}">{{vehicle}}</option>
+            {% endfor %}
+        </select><br>
+        Mileage:<br>
+        <input type="number" name="mileage" id="mileage" placeholder="Mileage"><br>
+        Litres:<br>
+        <input type="text" name="litres" id="litres" placeholder="Litres"><br>
+        Cost:<br>
+        <input type="text" name="cost" id="cost"  placeholder="Cost"><br>
+        Currency:<br>
+        <select name="currency" id="currency">
+            <option value="GBP">GBP</option>
+        </select><br><br>
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
