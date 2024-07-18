@@ -9,7 +9,7 @@ class Record(db.Model):
     mileage = db.Column(db.Integer)
     litres = db.Column(db.Integer)
     cost = db.Column(db.Integer)
-    currency = db.Column(db.Integer)
+    currency = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     date_uploaded = db.Column(db.DateTime(timezone=True), default=func.now())
 

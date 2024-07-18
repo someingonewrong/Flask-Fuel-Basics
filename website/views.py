@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from .models import Record
 from . import db
 import json
-# import database
+from .database import post_record, get_vehicles, get_columns, sql_query_func, view_records
 
 views = Blueprint('views', __name__)
 
@@ -14,28 +14,26 @@ def home():
 @views.route('/add-record', methods=['GET', 'POST'])
 @login_required
 def add_record():
-    # if request.method == 'POST':
-    #     result = database.post_record()
-    #     if result[0] == 'Data Added: ':
-    #         flash(result, category='message')
-    #     else:
-    #         flash(result, category='error')
+    vehicles = get_vehicles(current_user)
 
-    # vehicles = database.get_vehicles()
-
-    vehicles = ['bruh', 'please', 'work']
+    if request.method == 'POST':
+        result = post_record(current_user, vehicles)
+        if result.startswith('Data'):
+            flash(result, category='message')
+        else:
+            flash(result, category='error')
 
     return render_template('add_record.html', user=current_user, vehicles = vehicles)
 
 @views.route('/new-vehicle', methods=['GET', 'POST'])
 @login_required
 def new_vehicle():
-#     if request.method == 'POST':
-#         result = database.post_record()
-#         if result[0] == 'Data Added: ':
-#             flash(result, category='message')
-#         else:
-#             flash(result, category='error')
+    if request.method == 'POST':
+        result = post_record(current_user)
+        if result == 'success':
+            flash(result, category='message')
+        else:
+            flash(result, category='error')
 
     return render_template('new_vehicle.html', user=current_user)
 

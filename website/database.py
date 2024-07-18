@@ -1,50 +1,18 @@
 from flask import request
-import sqlite3
+# from flask_sqlalchemy import SQLAlchemy
+from .models import Record
+from . import db
+from datetime import date
 
-class Record:
-    def __init__(self, vehicle, date, mileage, litres, cost, currency):
-        self.vehicle = vehicle
-        self.date = date
-        self.mileage = mileage
-        self.litres = litres
-        self.cost = cost
-        self.currency = currency
-
-    def insert_record(self):
-        table_input = "INSERT INTO tracker (vehicle, date, mileage, litres, cost, currency) VALUES (?,?,?,?,?,?)"
-        inputs = [self.vehicle, self.date, self.mileage, self.litres, self.cost, self.currency]
-
-        con = db_con()
-        con.execute(table_input, inputs)
-        con.commit()
-
-def db_con():
-    return sqlite3.connect("fuel_tracker.db")
-
-def create_table():
-    con = db_con()
-    con.execute("""CREATE TABLE IF NOT EXISTS tracker 
-                (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                vehicle TEXT, 
-                date DATE, 
-                mileage INTEGER, 
-                litres INTEGER, 
-                cost INTEGER, 
-                currency TEXT)""")
-    con.commit()
-
-def get_vehicles():
+def get_vehicles(current_user):
     try:
-        con = db_con()
-        query = 'SELECT DISTINCT vehicle FROM tracker'
-        vehicles = con.execute(query)
-        con.commit(
+        vehicles_query = Record.query.filter_by(user_id = current_user.id)
+        vehicles = set()
 
-        )
-        vehicle_text = []
-        for vehic in vehicles:
-            vehicle_text.append(vehic[0])
-        return vehicle_text
+        for vehicle in vehicles_query:
+            vehicles.add(vehicle.vehicle)
+
+        return vehicles
     except Exception as e:
         print('Something is broken. The error: \n' + str(e))
         return []
@@ -54,9 +22,7 @@ def get_columns():
         con = db_con()
         query = "SELECT group_concat(name) FROM pragma_table_info('tracker')"  
         columns = list(con.execute(query))[0]
-        con.commit(
-
-        )
+        con.commit()
         columns_text = []
         for column in columns[0].split(','):
             columns_text.append(column)
@@ -64,46 +30,38 @@ def get_columns():
     except Exception as e:
         print('Something is broken. The error: \n' + str(e))
         return []
-    
-def get_last_mileage(vehicle):
-    try:
-        con = db_con()
-        query = f"SELECT mileage FROM tracker WHERE vehicle = '{vehicle}' ORDER BY mileage DESC"
-        mileage = con.execute(query).fetchone()[0]
-        con.commit()
-        return mileage
-    except:
-        return 0
 
-def post_record():
-    record = Record(request.form.get('vehicle'),
-                    request.form.get('date'),
-                    request.form.get('mileage'),
-                    request.form.get('litres'),
-                    request.form.get('cost'),
-                    request.form.get('currency'))
+def post_record(current_user, vehicles = []):
+    date_test = request.form.get('date').split('-')
+    try: date_convert = date(int(date_test[0]), int(date_test[1]), int(date_test[2]))
+    except: date_convert = date.today()
 
-    error_message = []
+    record = Record(vehicle = request.form.get('vehicle'),
+                    date = date_convert,
+                    mileage = request.form.get('mileage'),
+                    litres = request.form.get('litres'),
+                    cost = request.form.get('cost'),
+                    currency = request.form.get('currency'),
+                    user_id = current_user.id)
 
-    if len(record.date) != 10:
-        error_message.append('Invalid Date')
+    error_message = ''
         
     if len(record.vehicle) < 1:
-        error_message.append('Invalid Vehicle')
+        error_message += 'Invalid Vehicle    ' 
         
     if len(record.mileage) < 1:
-        error_message.append('Invalid Mileage')
+        error_message += 'Invalid Mileage    '
         
     if len(record.litres) < 1:
-        error_message.append('Invalid Litres')
+        error_message += 'Invalid Litres    '
         
     if len(record.cost) < 1:
-        error_message.append('Invalid Cost')
+        error_message += 'Invalid Cost    '
     
     if len(error_message) > 0:
         return error_message
     else:
-        return check_input(record)
+        return check_input(record, vehicles, current_user)
 
 def int_convert(input):
     input_split = input.split('.')
@@ -121,60 +79,53 @@ def int_convert(input):
         except: raise
     return output
 
-def check_input(record):
-    con = db_con()
-    temp = list(con.execute("SELECT DISTINCT vehicle FROM tracker"))
+def check_input(record, vehicles, current_user):
     url = str(request.base_url.split('/')[-1])
-    vehicles = []
-    error_message = []
-    try:
-        mileage_last = con.execute("SELECT mileage FROM tracker WHERE vehicle = '{}' ORDER BY mileage DESC LIMIT 1".format(record.vehicle)).fetchone()[0]
-    except: pass
-    con.commit()
+    error_message = ''
+    mileages = Record.query.filter_by(user_id = current_user.id).filter_by(vehicle = record.vehicle)
+    mileages_useable = []
 
-    for item in temp:
-        vehicles.append(item[0])
+    for mileage in mileages:
+        mileages_useable.append(mileage.mileage)
 
-    if url != 'new-vehicle':
+    mileage_last = sorted(mileages_useable, reverse=True)[0]
+
+    if url == 'add-record':
         if record.vehicle not in vehicles: 
-            error_message.append('Somehow you\'ve inputted an invalid vehicle')
+            error_message += 'Somehow you\'ve inputted an invalid vehicle    '
 
         if mileage_last > int(record.mileage):
-            error_message.append('Mileage can not be smaller than the last mileage: ' + str(mileage_last))
+            error_message += 'Mileage can not be smaller than the last mileage: ' + str(mileage_last) + '    '
     
     try: record.litres = int_convert(record.litres)
-    except: error_message.append('Litres could not be convertered to required format')
+    except: error_message += 'Litres could not be convertered to required format    '
     
     try: record.cost = int_convert(record.cost)
-    except: error_message.append('Cost could not be convertered to required format')
+    except: error_message += 'Cost could not be convertered to required format    '
 
     if len(error_message) > 0:
         return error_message
     else:
-        record.insert_record()
-        success_list = ['Data Added: ', 'Date: ' + str(record.date),
-                        'Vehicle: ' + str(record.vehicle), 'Mileage: ' + str(record.mileage),
-                        'Litres: ' + str(record.litres), 'Cost: ' + str(record.cost),
-                        'Currency: ' + str(record.currency)]
+        db.session.add(record)
+        db.session.commit()
+        success_list = 'Data Added:    Date: ' + str(record.date) + '   Vehicle: ' + str(record.vehicle) + '   Mileage: ' + str(record.mileage) + '   Litres: ' + str(record.litres) + '   Cost: ' + str(record.cost) + '   Currency: ' + str(record.currency)
         return success_list
 
 def view_records(vehicle = '*', column = 'id', updown = 'ASC'):
-    con = db_con()
     if vehicle == '*':
         query = f'SELECT * FROM tracker ORDER BY {column} {updown}'
     else:
         query = f'SELECT * FROM tracker WHERE vehicle = \'{vehicle}\' ORDER BY {column} {updown}'
-    table = list(con.execute(query))
-    con.commit()
-    return table
+    # table = list(con.execute(query))
+    # con.commit()
+    # return table
 
 def sql_query_func():
-    con = db_con()
     try:
-        result = con.execute(request.form.get('sql_line'))
-        con.commit()
-        print(list(result))
+        # result = con.execute(request.form.get('sql_line'))
+        # con.commit()
+        # print(list(result))
         return ['sql success']
     except:
-        con.commit()
+        # con.commit()
         return ['sql failed']
