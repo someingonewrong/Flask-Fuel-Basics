@@ -1,9 +1,7 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash
 from flask_login import login_required, current_user
-from .models import Record
 from . import db
-import json
-from .database import post_record, get_vehicles, get_columns, sql_query_func, view_records
+from .database import post_record, get_vehicles, sql_query_func, fetch_records
 
 views = Blueprint('views', __name__)
 
@@ -40,19 +38,18 @@ def new_vehicle():
 @views.route('/view-records', methods=['GET', 'POST'])
 @login_required
 def view_records():
-    # columns = database.get_columns()
-    # vehicles = database.get_vehicles()
+    columns = ['id', 'vehicle', 'date', 'mileage', 'litres', 'cost', 'currency', 'user_id', 'date_uploaded']
+    vehicles = get_vehicles(current_user)
 
-    # if request.method == 'POST':
-    #     vehicle = request.form.get('vehicle')
-    #     column = request.form.get('column')
-    #     updown = request.form.get('updown')
-    #     table = database.view_records(vehicle, column, updown)
-    #     return render_template('view_records.html', lines = table, vehicles = vehicles, columns = columns, vehicle = vehicle, column = column, updown = updown)
-    # else:
-    #     table = database.view_records()
-    #     return render_template('view_records.html', lines = table, vehicles = vehicles, columns = columns, vehicle = 'all', column = 'id', updown = 'ASC')
-    return '<h1>not ready yet</h1>'
+    if request.method == 'POST':
+        vehicle = request.form.get('vehicle')
+        column = request.form.get('column')
+        updown = request.form.get('updown')
+        table = fetch_records(current_user, vehicle, column, updown)
+        return render_template('view_records.html', user=current_user, lines = table, vehicles = vehicles, columns = columns, vehicle = vehicle, column = column, updown = updown)
+    else:
+        table = fetch_records(current_user)
+        return render_template('view_records.html', user=current_user, lines = table, vehicles = vehicles, columns = columns, vehicle = 'all', column = 'id', updown = 'ASC')
 
 @views.route('/sql', methods=['GET', 'POST'])
 @login_required

@@ -6,7 +6,7 @@
             table {
             font-family: arial, sans-serif;
             border-collapse: collapse;
-            width: 600px;
+            width: 900px;
             }
             
             td, th {
@@ -66,28 +66,34 @@
         </p>
     </form>
 
-    <table>
-        <tr>
-        <th>ID</th>
-        <th>Vehicle</th>
-        <th>Date</th>
-        <th>Mileage</th>
-        <th>Litres</th>
-        <th>Cost</th>
-        <th>Currency</th>
-        </tr>
-
-        {% for line in lines %}
+    <table class="sortable">
+        <thead>
             <tr>
-                <td>{{line[0]}}</td>
-                <td>{{line[1]}}</td>
-                <td>{{line[2]}}</td>
-                <td>{{line[3]}}</td>
-                <td>{{line[4]}}</td>
-                <td>{{line[5]}}</td>
-                <td>{{line[6]}}</td>
+                <th>ID</th>
+                <th>Vehicle</th>
+                <th>Date</th>
+                <th>Mileage</th>
+                <th>Litres</th>
+                <th>Cost</th>
+                <th>Currency</th>
+                <th>User ID</th>
+                <th>Date added</th>
             </tr>
-        {% endfor %}
-
+        </thead>
+        <tbody>
+            {% for line in lines %}
+                <tr>
+                    <td>{{line[0]}}</td>
+                    <td>{{line[1]}}</td>
+                    <td>{{line[2]}}</td>
+                    <td>{{line[3]}}</td>
+                    <td>{{line[4]}}</td>
+                    <td>{{line[5]}}</td>
+                    <td>{{line[6]}}</td>
+                    <td>{{line[7]}}</td>
+                    <td>{{line[8]}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

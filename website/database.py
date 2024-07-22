@@ -1,5 +1,4 @@
 from flask import request
-# from flask_sqlalchemy import SQLAlchemy
 from .models import Record
 from . import db
 from datetime import date
@@ -13,20 +12,6 @@ def get_vehicles(current_user):
             vehicles.add(vehicle.vehicle)
 
         return vehicles
-    except Exception as e:
-        print('Something is broken. The error: \n' + str(e))
-        return []
-    
-def get_columns():
-    try:
-        con = db_con()
-        query = "SELECT group_concat(name) FROM pragma_table_info('tracker')"  
-        columns = list(con.execute(query))[0]
-        con.commit()
-        columns_text = []
-        for column in columns[0].split(','):
-            columns_text.append(column)
-        return columns_text
     except Exception as e:
         print('Something is broken. The error: \n' + str(e))
         return []
@@ -63,22 +48,6 @@ def post_record(current_user, vehicles = []):
     else:
         return check_input(record, vehicles, current_user)
 
-def int_convert(input):
-    input_split = input.split('.')
-    if len(input_split) > 2 or int(input_split[0]) < 0:
-        raise
-    try:
-        output = int(input_split[0]) * 100
-        if len(input_split[1]) == 1:
-            output += int(input_split[1]) * 10
-        elif int(input_split[1]) < 0: raise
-        else:
-            output += int(input_split[1])
-    except:
-        try: output = int(input) * 100
-        except: raise
-    return output
-
 def check_input(record, vehicles, current_user):
     url = str(request.base_url.split('/')[-1])
     error_message = ''
@@ -88,7 +57,7 @@ def check_input(record, vehicles, current_user):
     for mileage in mileages:
         mileages_useable.append(mileage.mileage)
 
-    mileage_last = sorted(mileages_useable, reverse=True)[0]
+    mileage_last = sorted(mileages_useable)[-1]
 
     if url == 'add-record':
         if record.vehicle not in vehicles: 
@@ -111,14 +80,41 @@ def check_input(record, vehicles, current_user):
         success_list = 'Data Added:    Date: ' + str(record.date) + '   Vehicle: ' + str(record.vehicle) + '   Mileage: ' + str(record.mileage) + '   Litres: ' + str(record.litres) + '   Cost: ' + str(record.cost) + '   Currency: ' + str(record.currency)
         return success_list
 
-def view_records(vehicle = '*', column = 'id', updown = 'ASC'):
-    if vehicle == '*':
-        query = f'SELECT * FROM tracker ORDER BY {column} {updown}'
+def int_convert(input):
+    input_split = input.split('.')
+    if len(input_split) > 2 or int(input_split[0]) < 0:
+        raise
+    try:
+        output = int(input_split[0]) * 100
+        if len(input_split[1]) == 1:
+            output += int(input_split[1]) * 10
+        elif int(input_split[1]) < 0: raise
+        else:
+            output += int(input_split[1])
+    except:
+        try: output = int(input) * 100
+        except: raise
+    return output
+
+def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'ASC'):
+    temp = f'Record.{column}'
+
+    if vehicle == '*' and column == 'id':
+        records = Record.query.filter_by(user_id = current_user.id).all()
+    elif vehicle != '*' and column == 'id':
+        records = Record.query.filter_by(user_id = current_user.id, vehicle = vehicle).all()
+    elif vehicle == '*' and column != 'id':
+        records = Record.query.filter_by(user_id = current_user.id).order_by(Record.__dict__[column]).all()
     else:
-        query = f'SELECT * FROM tracker WHERE vehicle = \'{vehicle}\' ORDER BY {column} {updown}'
-    # table = list(con.execute(query))
-    # con.commit()
-    # return table
+        records = Record.query.filter_by(user_id = current_user.id, vehicle = vehicle).order_by(Record.__dict__[column]).all()
+    table = []
+    for record in records:
+        table.append([record.id, record.vehicle, record.date, record.mileage, record.litres, record.cost, record.currency, record.user_id, record.date_uploaded])
+
+    if updown != 'ASC':
+        table.reverse()
+
+    return table
 
 def sql_query_func():
     try:
