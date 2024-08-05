@@ -10,6 +10,7 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'shhh-dont-look-here'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
     db.init_app(app)
 
     from .views import views

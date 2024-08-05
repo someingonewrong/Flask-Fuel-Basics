@@ -51,7 +51,7 @@ def post_record(current_user, vehicles = []):
 def check_input(record, vehicles, current_user):
     url = str(request.base_url.split('/')[-1])
     error_message = ''
-    mileages = Record.query.filter_by(user_id = current_user.id).filter_by(vehicle = record.vehicle)
+    mileages = Record.query.filter_by(user_id = current_user.id, vehicle = record.vehicle)
     mileages_useable = []
 
     for mileage in mileages:
