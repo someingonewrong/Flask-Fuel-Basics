@@ -67,7 +67,10 @@ def import_csv():
         
         if file and allowed_file(file.filename):
             message = read_csv(file, current_user)
-            flash(message, category='message')
+            if message == 'An error occured somewhere.':
+                flash(message, category='error')
+            else: flash(message, category='message')
+            
         return render_template('import.html', user = current_user)
 
     return render_template('import.html', user = current_user)

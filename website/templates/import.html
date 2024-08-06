@@ -13,21 +13,16 @@
     <li>The column order is: date, mileage, cost, litres, currency(optional)</li><br><br>
 
     <h5>Optional Formatting:</h5>
-    <h6>Vehicle Name Column:</h6>
-    <li>If you are adding multiple vehicles in on CSV file check this.</li>
-    <li>The first column of each row be the vehicle name.</li>
-    <li>The name of the file is now ignored.</li><br>
-
     <h6>Table Key Row:</h6>
-    <li>If your column order is different or you have a key row check this.</li>
-    <li>column names must be: vehicle(if checked), date, mileage, cost, litres, currency(optional)</li>
+    <li>The first row must be a key row.</li>
+    <li>If you are adding multiple vehicles in on CSV file check this.</li>
+    <li>If the columns are in a different order check this.</li>
+    <li>column names must be: vehicle(optional), date, mileage, cost, litres, currency(optional)</li>
 
 
     <br><br>
     <h3>Upload File:</h3>
     <form method=post enctype=multipart/form-data>
-        <input type="checkbox" name="multi" value="multi">
-        <label for="multi"> Vehicle Name Column</label><br>
         <input type="checkbox" name="key" value="key">
         <label for="key"> Table Key Row</label><br>
         <input type=file name=file>
