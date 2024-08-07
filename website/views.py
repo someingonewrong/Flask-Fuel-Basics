@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, flash
 from flask_login import login_required, current_user
 from . import db
-from .database import post_record, get_vehicles, fetch_records
-from .csv_things import allowed_file, read_csv # download_csv, 
+from .database import post_record, get_vehicles, fetch_records, delete_record
+from .csv_things import allowed_file, read_csv
 
 views = Blueprint('views', __name__)
 
@@ -42,15 +42,22 @@ def view_records():
     columns = ['id', 'vehicle', 'date', 'mileage', 'litres', 'cost', 'currency', 'user_id', 'date_uploaded']
     vehicles = get_vehicles(current_user)
 
-    if request.method == 'POST':
+    vehicle = 'all'
+    column = 'id'
+    updown = 'ASC'
+
+    if request.method == 'POST' and 'vehicle' in request.form:
         vehicle = request.form.get('vehicle')
         column = request.form.get('column')
         updown = request.form.get('updown')
         table = fetch_records(current_user, vehicle, column, updown)
-        return render_template('view_records.html', user=current_user, lines = table, vehicles = vehicles, columns = columns, vehicle = vehicle, column = column, updown = updown)
+    elif request.method == 'POST':
+        delete_record(current_user, request.form)
+        table = fetch_records(current_user)
     else:
         table = fetch_records(current_user)
-        return render_template('view_records.html', user=current_user, lines = table, vehicles = vehicles, columns = columns, vehicle = 'all', column = 'id', updown = 'ASC')
+        
+    return render_template('view_records.html', user=current_user, lines = table, vehicles = vehicles, columns = columns, vehicle = vehicle, column = column, updown = updown)
 
 @views.route('/import-csv', methods=['GET', 'POST'])
 @login_required

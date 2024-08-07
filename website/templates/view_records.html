@@ -6,7 +6,7 @@
             table {
             font-family: arial, sans-serif;
             border-collapse: collapse;
-            width: 900px;
+            width: 750px;
             }
             
             td, th {
@@ -15,6 +15,10 @@
             padding: 8px;
             }
             
+            th {
+            text-align: center;
+            }
+
             tr:nth-child(even) {
             background-color: #d4f7cd;
             }
@@ -22,14 +26,28 @@
             tr:nth-child(odd) {
             background-color: #f7cdcd;
             }
+
+            table td:nth-child(1) {
+            text-align: center;
+            }
         </style>
     </head>
 {% endblock %}
 
 {% block content %}
+    <script>
+        function toggle(source) {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source)
+                    checkboxes[i].checked = source.checked;
+        }
+    }
+    </script>
+
     <h1>View Records</h1>
 
-    <form method='post'>
+    <form method='POST' id="filter">
         <p>Filter by Vehicle:
         <select name="vehicle" id="vehicle">
             <option value="*">all</option>
@@ -66,34 +84,43 @@
         </p>
     </form>
 
-    <table class="sortable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Vehicle</th>
-                <th>Date</th>
-                <th>Mileage</th>
-                <th>Litres</th>
-                <th>Cost</th>
-                <th>Currency</th>
-                <th>User ID</th>
-                <th>Date added</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for line in lines %}
+    <form method='POST' id='delete'>
+        <table class="sortable">
+            <thead>
                 <tr>
-                    <td>{{line[0]}}</td>
-                    <td>{{line[1]}}</td>
-                    <td>{{line[2]}}</td>
-                    <td>{{line[3]}}</td>
-                    <td>{{line[4]}}</td>
-                    <td>{{line[5]}}</td>
-                    <td>{{line[6]}}</td>
-                    <td>{{line[7]}}</td>
-                    <td>{{line[8]}}</td>
+                    <th>Select <input type="checkbox" onclick="toggle(this);" /></th>
+                    <th>ID</th>
+                    <th>Vehicle</th>
+                    <th>Date</th>
+                    <th>Mileage</th>
+                    <th>Litres</th>
+                    <th>Cost</th>
+                    <th>Currency</th>
+                    <th>Date added</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                    {% for line in lines %}
+                        <tr>
+                            <td><input type="checkbox" name="{{line[0]}}" value="{{line[0]}}"></td>
+                            <td>{{line[0]}}</td>
+                            <td>{{line[1]}}</td>
+                            <td>{{line[2]}}</td>
+                            <td>{{line[3]}}</td>
+                            <td>{{line[4]}}</td>
+                            <td>{{line[5]}}</td>
+                            <td>{{line[6]}}</td>
+                            <td>{{line[8]}}</td>
+                        </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <p>
+            Delete selected items: 
+            <input type=submit value=Delete>
+        </p>
+        <br>
+    </form>
+    
 {% endblock %}

@@ -116,6 +116,10 @@ def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'ASC'):
 
     return table
 
+def delete_record(current_user, records):
+    for line in records:
+        print(line)
+
 def sql_query_func():
     try:
         # result = con.execute(request.form.get('sql_line'))
