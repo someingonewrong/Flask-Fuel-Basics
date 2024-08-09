@@ -51,8 +51,12 @@ def view_records():
         column = request.form.get('column')
         updown = request.form.get('updown')
         table = fetch_records(current_user, vehicle, column, updown)
-    elif request.method == 'POST':
-        delete_record(current_user, request.form)
+    elif request.method == 'POST' and len(request.form) > 0 and request.form.get('delete') == 'Delete':
+        message = delete_record(current_user, request.form)
+        flash(message[0], message[1])
+        table = fetch_records(current_user)
+    elif request.method == 'POST' and len(request.form) > 0 and request.form.get('export') == 'Export':
+        flash('yeah i don\'t know how to do this yet', 'error')
         table = fetch_records(current_user)
     else:
         table = fetch_records(current_user)

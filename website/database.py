@@ -117,8 +117,17 @@ def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'ASC'):
     return table
 
 def delete_record(current_user, records):
-    for line in records:
-        print(line)
+    line_n = 0
+    try:
+        for line in records:
+            if line.isnumeric():
+                line_n += 1
+                Record.query.filter(Record.user_id == current_user.id, Record.id == line).delete()
+        db.session.commit()
+        return ['Deleted ' + str(line_n) + ' records', 'message']
+    except:
+        return ['An error occured', 'error']
+        
 
 def sql_query_func():
     try:
