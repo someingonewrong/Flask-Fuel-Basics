@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, send_file
 from flask_login import login_required, current_user
 from . import db
 from .database import post_record, get_vehicles, fetch_records, delete_record
-from .csv_things import allowed_file, read_csv
+from .csv_things import allowed_file, read_csv, csv_setup
 
 views = Blueprint('views', __name__)
 
@@ -56,8 +56,14 @@ def view_records():
         flash(message[0], message[1])
         table = fetch_records(current_user)
     elif request.method == 'POST' and len(request.form) > 0 and request.form.get('export') == 'Export':
-        flash('yeah i don\'t know how to do this yet', 'error')
+        message = csv_setup(current_user, request.form)
+        flash(message[0], message[1])
         table = fetch_records(current_user)
+
+        with open('test_file.csv', 'w') as f:
+            f.write('test')
+        
+        return send_file('test_file.csv', as_attachment=True, download_name='test_file.csv')
     else:
         table = fetch_records(current_user)
         

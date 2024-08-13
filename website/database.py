@@ -127,6 +127,9 @@ def delete_record(current_user, records):
         return ['Deleted ' + str(line_n) + ' records', 'message']
     except:
         return ['An error occured', 'error']
+    
+def find_record(current_user, id):
+    return Record.query.filter(Record.user_id == current_user.id, Record.id == id).all()[0]
         
 
 def sql_query_func():

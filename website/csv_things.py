@@ -1,10 +1,10 @@
-from flask import request
+from flask import request, send_file
 from .models import Record
 from . import db
 from datetime import date
 import csv
 import io
-from .database import int_convert
+from .database import int_convert, find_record
 
 ALLOWED_EXTENSIONS = {'csv'}
 
@@ -40,8 +40,8 @@ def row_csv(text_file, current_user, vehicle):
         temp_date = line[0].split('/')
         line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[1]))
         line_mileage = int(line[1].strip('p'))
-        line_cost = int_convert(line[2])
-        line_litres = int_convert(line[3])
+        line_cost = int_convert(line[3])
+        line_litres = int_convert(line[2])
         try: currency = line[4]
         except: currency = 'GBP'
 
@@ -87,3 +87,44 @@ def dict_csv(text_file, current_user, vehicle):
     db.session.commit()
 
     return line_n
+
+def csv_setup(current_user, records):
+    line_n = 0
+    one_vehicle = True
+    all_records = []
+    vehicle_names = []
+    file_name = 'exported_records.csv'
+    
+    try:
+        for line in records:
+            if line.isnumeric():
+                record = find_record(current_user, line)
+                all_records.append(record)
+                
+                if line_n != 0 and record.vehicle not in vehicle_names:
+                    one_vehicle = False
+                
+                vehicle_names.append(record.vehicle)
+                line_n += 1
+
+        if one_vehicle == True:
+            file_name = one_csv(all_records)
+        return ['Wrote ' + str(line_n) + ' records to csv file', 'message', file_name]
+    except Exception as e:
+        print(e)
+        return ['An error occured', 'error', 'error']
+
+def one_csv(all_records):
+    file_name = all_records[0].vehicle + '.csv'
+    
+    with open(file_name, 'w') as csv_file:
+        for record in all_records:
+            record_date = str(record.date)
+            litres = str(int(record.litres) / 100.0)
+            cost = str(int(record.cost) / 100.0)
+            csv_file.write(record_date + ',' + str(record.mileage) + ',' + litres + ',' + cost + ',' + str(record.currency) + '\n')
+
+    with open(file_name, 'r') as f:
+        for line in csv.reader(f):
+            print(line)
+    return file_name
