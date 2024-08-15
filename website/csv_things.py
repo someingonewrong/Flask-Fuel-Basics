@@ -93,7 +93,6 @@ def csv_setup(current_user, records):
     one_vehicle = True
     all_records = []
     vehicle_names = []
-    file_name = 'exported_records.csv'
     
     try:
         for line in records:
@@ -108,23 +107,36 @@ def csv_setup(current_user, records):
                 line_n += 1
 
         if one_vehicle == True:
-            file_name = one_csv(all_records)
-        return ['Wrote ' + str(line_n) + ' records to csv file', 'message', file_name]
+            file = one_csv(all_records)
+        else:
+            file = multi_csv(all_records)
+        
+        return file
     except Exception as e:
         print(e)
         return ['An error occured', 'error', 'error']
 
 def one_csv(all_records):
     file_name = all_records[0].vehicle + '.csv'
+    file_data = ''
     
-    with open(file_name, 'w') as csv_file:
-        for record in all_records:
-            record_date = str(record.date)
-            litres = str(int(record.litres) / 100.0)
-            cost = str(int(record.cost) / 100.0)
-            csv_file.write(record_date + ',' + str(record.mileage) + ',' + litres + ',' + cost + ',' + str(record.currency) + '\n')
+    for record in all_records:
+        record_date = str(record.date)
+        litres = str(int(record.litres) / 100.0)
+        cost = str(int(record.cost) / 100.0)
+        file_data += record_date + ',' + str(record.mileage) + ',' + litres + ',' + cost + ',' + str(record.currency) + '\n'
 
-    with open(file_name, 'r') as f:
-        for line in csv.reader(f):
-            print(line)
-    return file_name
+    return [file_name, file_data]
+
+def multi_csv(all_records):
+    file_name = 'exported_records.csv'
+    file_data = 'vehicle,date,mileage,litres,cost,currency\n'
+
+    for record in all_records:
+        record_date = str(record.date)
+        litres = str(int(record.litres) / 100.0)
+        cost = str(int(record.cost) / 100.0)
+        file_data += str(record.vehicle) + ',' + record_date + ',' + str(record.mileage) + ',' + litres + ',' + cost + ',' + str(record.currency) + '\n'
+
+    return [file_name, file_data]
+

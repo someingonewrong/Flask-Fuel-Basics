@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, flash, send_file
+from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
 from . import db
 from .database import post_record, get_vehicles, fetch_records, delete_record
 from .csv_things import allowed_file, read_csv, csv_setup
+import csv
 
 views = Blueprint('views', __name__)
 
@@ -51,19 +52,22 @@ def view_records():
         column = request.form.get('column')
         updown = request.form.get('updown')
         table = fetch_records(current_user, vehicle, column, updown)
+        
     elif request.method == 'POST' and len(request.form) > 0 and request.form.get('delete') == 'Delete':
         message = delete_record(current_user, request.form)
         flash(message[0], message[1])
         table = fetch_records(current_user)
-    elif request.method == 'POST' and len(request.form) > 0 and request.form.get('export') == 'Export':
-        message = csv_setup(current_user, request.form)
-        flash(message[0], message[1])
-        table = fetch_records(current_user)
 
-        with open('test_file.csv', 'w') as f:
-            f.write('test')
+    elif request.method == 'POST' and len(request.form) > 1 and request.form.get('export') == 'Export':
+        file = csv_setup(current_user, request.form)
+        table = fetch_records(current_user)
         
-        return send_file('test_file.csv', as_attachment=True, download_name='test_file.csv')
+        response = make_response(file[1])
+        cd = f'attachment; filename={file[0]}'
+        response.headers['Content-Disposition'] = cd 
+        response.mimetype='text/csv'
+
+        return response
     else:
         table = fetch_records(current_user)
         
