@@ -8,7 +8,7 @@ This is my basic project to understand how Flask works and relearn programming. 
 - ~~Add page to add a new vehicle.~~
 - ~~Add security to the database.~~
 - ~~Create a login/out page.~~
-- Import and export funtion of a CSV file.
+- ~~Import and export funtion of a CSV file.~~
 - Remove sql query page.
 - Create a way to remove records.
 - Create a page to view the data for each vehicle.

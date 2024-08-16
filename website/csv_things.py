@@ -11,6 +11,7 @@ ALLOWED_EXTENSIONS = {'csv'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 def read_csv(file, current_user):
     
     with io.TextIOWrapper(file, encoding='utf-8') as text_file:
@@ -22,7 +23,6 @@ def read_csv(file, current_user):
                 line_n = dict_csv(text_file, current_user, vehicle)
             else:
                 line_n = row_csv(text_file, current_user, vehicle)
-
             db.session.commit()
             message = 'Added ' + str(line_n) + ' Rows'
         except:
@@ -38,6 +38,8 @@ def row_csv(text_file, current_user, vehicle):
     for line in reader:
         line_n += 1
         temp_date = line[0].split('/')
+        try: len(temp_date[1])
+        except: temp_date = line[0].split('-')
         line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[1]))
         line_mileage = int(line[1].strip('p'))
         line_cost = int_convert(line[3])
@@ -67,6 +69,8 @@ def dict_csv(text_file, current_user, vehicle):
         try: line_vehicle = line['vehicle']
         except: line_vehicle = vehicle
         temp_date = line['date'].split('/')
+        try: len(temp_date[1])
+        except: temp_date = line['date'].split('-')
         line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[1]))
         line_mileage = int(line['mileage'])
         line_cost = int_convert(line['cost'])
