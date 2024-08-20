@@ -147,3 +147,14 @@ def sql_query_func(): # It don't work :( not sure how to fix. always get 'unable
     except Exception as e:
         print(e)
         return ['sql failed', 'error']
+    
+def get_date_mileage(current_user, vehicle):
+    all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).all()
+    labels = []
+    values = []
+
+    for line in all_data:
+        labels.append(str(line.date))
+        values.append(str(line.mileage))
+    
+    return [labels, values]

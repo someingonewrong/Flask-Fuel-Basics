@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
 from . import db
-from .database import post_record, get_vehicles, fetch_records, delete_record, sql_query_func
+from .database import post_record, get_vehicles, fetch_records, delete_record, sql_query_func, get_date_mileage
 from .csv_things import allowed_file, read_csv, csv_setup
 
 views = Blueprint('views', __name__)
@@ -35,6 +35,29 @@ def new_vehicle():
             flash(result, category='error')
 
     return render_template('new_vehicle.html', user=current_user)
+
+@views.route('/import-csv', methods=['GET', 'POST'])
+@login_required
+def import_csv():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part', category='error')
+            return render_template('import.html', user = current_user)
+        
+        file = request.files['file']
+        if file.filename == '':
+            flash('No file selected', category='error')
+            return render_template('import.html', user = current_user)
+        
+        if file and allowed_file(file.filename):
+            message = read_csv(file, current_user)
+            if message == 'An error occured somewhere.':
+                flash(message, category='error')
+            else: flash(message, category='message')
+            
+        return render_template('import.html', user = current_user)
+
+    return render_template('import.html', user = current_user)
 
 @views.route('/view-records', methods=['GET', 'POST'])
 @login_required
@@ -72,28 +95,22 @@ def view_records():
         
     return render_template('view_records.html', user=current_user, lines = table, vehicles = vehicles, columns = columns, vehicle = vehicle, column = column, updown = updown)
 
-@views.route('/import-csv', methods=['GET', 'POST'])
+@views.route('/mileage-change', methods=['GET', 'POST'])
 @login_required
-def import_csv():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            flash('No file part', category='error')
-            return render_template('import.html', user = current_user)
-        
-        file = request.files['file']
-        if file.filename == '':
-            flash('No file selected', category='error')
-            return render_template('import.html', user = current_user)
-        
-        if file and allowed_file(file.filename):
-            message = read_csv(file, current_user)
-            if message == 'An error occured somewhere.':
-                flash(message, category='error')
-            else: flash(message, category='message')
-            
-        return render_template('import.html', user = current_user)
+def mileage_change():
+    vehicles = get_vehicles(current_user)
+    for x in vehicles:
+        vehicle = x
+        break
 
-    return render_template('import.html', user = current_user)
+    if request.method == 'POST':
+        vehicle = request.form.get('vehicle')
+    
+    data = get_date_mileage(current_user, vehicle)
+    labels = data[0]
+    values = data[1]
+    
+    return render_template('mileage_change.html', user=current_user, vehicles = vehicles, labels = labels, values = values)
 
 @views.route('/sql', methods=['GET', 'POST'])
 @login_required
