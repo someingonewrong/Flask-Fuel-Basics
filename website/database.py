@@ -2,6 +2,8 @@ from flask import request
 from .models import Record
 from . import db
 from datetime import date
+import sqlite3
+from os import path
 
 def get_vehicles(current_user):
     try:
@@ -132,12 +134,16 @@ def find_record(current_user, id):
     return Record.query.filter(Record.user_id == current_user.id, Record.id == id).all()[0]
         
 
-def sql_query_func():
+def sql_query_func(): # It don't work :( not sure how to fix. always get 'unable to open database file'
     try:
-        # result = con.execute(request.form.get('sql_line'))
-        # con.commit()
-        # print(list(result))
-        return ['sql success']
-    except:
-        # con.commit()
-        return ['sql failed']
+        path_ = path.dirname(path.abspath(__file__))
+        db_path = path.join(path_.strip('website/'), 'instance/fuel_tracker_backup.db')
+        con = sqlite3.connect(db_path)
+        result = con.execute(request.form.get('sql_line'))
+        con.commit()
+        con.close()
+        print(list(result))
+        return ['sql success', 'message']
+    except Exception as e:
+        print(e)
+        return ['sql failed', 'error']

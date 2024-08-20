@@ -37,9 +37,9 @@ def row_csv(text_file, current_user, vehicle):
 
     for line in reader:
         line_n += 1
-        temp_date = line[0].split('/')
+        temp_date = line[0].split('-')
         try: len(temp_date[1])
-        except: temp_date = line[0].split('-')
+        except: temp_date = line[0].split('/')
         line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[1]))
         line_mileage = int(line[1].strip('p'))
         line_cost = int_convert(line[3])
@@ -68,9 +68,9 @@ def dict_csv(text_file, current_user, vehicle):
         line_n += 1
         try: line_vehicle = line['vehicle']
         except: line_vehicle = vehicle
-        temp_date = line['date'].split('/')
+        temp_date = line['date'].split('-')
         try: len(temp_date[1])
-        except: temp_date = line['date'].split('-')
+        except: temp_date = line['date'].split('/')
         line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[1]))
         line_mileage = int(line['mileage'])
         line_cost = int_convert(line['cost'])

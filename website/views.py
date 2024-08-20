@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
 from . import db
-from .database import post_record, get_vehicles, fetch_records, delete_record
+from .database import post_record, get_vehicles, fetch_records, delete_record, sql_query_func
 from .csv_things import allowed_file, read_csv, csv_setup
-import csv
 
 views = Blueprint('views', __name__)
 
@@ -99,45 +98,14 @@ def import_csv():
 @views.route('/sql', methods=['GET', 'POST'])
 @login_required
 def sql_query():
-    # if request.method == 'POST':
-    #     result = database.sql_query_func()
-    #     if result[0] == 'sql success':
-    #         flash(result, category='message')
-    #     else:
-    #         flash(result, category='error')
+    if current_user.id == 1:
+        if request.method == 'POST':
+            result = sql_query_func()
+            flash(result[0], result[1])
 
-    return render_template('sql.html', user=current_user)
+        return render_template('sql.html', user=current_user)
+    return '<h1>Nope</h1>'
 
 @views.route('/about')
 def about():
     return render_template('about.html', user=current_user)
-
-
-# import sqlite3
-# from .models import Record
-# from datetime import date
-
-# @views.route('/export_import')
-# @login_required
-# def export_import():
-#     con = sqlite3.connect("website/fuel_tracker.db")  #connect to the database
-#     cursor = con.cursor()
-
-#     all_records = list(cursor.execute('SELECT * FROM tracker'))
-
-#     for line in all_records:
-#         date_test = line[2].split('-')
-#         date_convert = date(int(date_test[0]), int(date_test[1]), int(date_test[2]))
-#         record = Record(vehicle = line[1],
-#                     date = date_convert,
-#                     mileage = line[3],
-#                     litres = line[4],
-#                     cost = line[5],
-#                     currency = line[6],
-#                     user_id = current_user.id)
-#         db.session.add(record)
-#         db.session.commit()
-
-#     con.commit()
-#     con.close()
-#     return ('read')
