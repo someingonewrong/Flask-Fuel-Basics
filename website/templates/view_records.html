@@ -73,11 +73,11 @@
         </select>
         
         <select name="updown" id="updown">
-            <option value="ASC">Ascending</option>
-            {% if updown == 'DESC' %}
-                <option value="DESC" selected>Descending</option>
+            <option value="DESC">Descending</option>
+            {% if updown == 'ASC' %}
+                <option value="ASC" selected>Ascending</option>
             {% else %}
-                <option value="DESC">Descending</option>
+                <option value="ASC">Ascending</option>
             {% endif %}
         </select>
 

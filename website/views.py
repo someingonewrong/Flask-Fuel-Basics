@@ -67,7 +67,7 @@ def view_records():
 
     vehicle = 'all'
     column = 'id'
-    updown = 'ASC'
+    updown = 'DESC'
 
     if request.method == 'POST' and 'vehicle' in request.form:
         vehicle = request.form.get('vehicle')

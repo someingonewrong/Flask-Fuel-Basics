@@ -99,7 +99,7 @@ def int_convert(input):
         except: raise
     return output
 
-def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'ASC'):
+def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'DESC'):
     temp = f'Record.{column}'
 
     if vehicle == '*' and column == 'id':

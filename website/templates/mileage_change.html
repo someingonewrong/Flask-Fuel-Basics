@@ -1,23 +1,21 @@
-<!-- {% extends "base.html" %} 
+{% extends "base.html" %} 
 {% block title %}Mileage Change{% endblock %}
 
-{% block content %} -->
+{% block head_ext %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+{% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Mileage Change</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    </head>
-    <body>
+{% block content %}
         <h1>Mileage Change</h1>
         <form method="post">
             Vehicle: &emsp;
             <select name="vehicle" id="vehicle">
-                {% for vehicle in vehicles %}
-                    <option value="{{vehicle}}">{{vehicle}}</option>
+                {% for vehicl in vehicles %}
+                    {% if vehicl == vehicle %}
+                        <option value="{{vehicl}}" selected>{{vehicl}}</option>
+                    {% else %}
+                        <option value="{{vehicl}}">{{vehicl}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
             &emsp;
@@ -26,23 +24,19 @@
         
         <br>
         
-        <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+        <canvas id="myChart" style="width:100%"></canvas>
 
         <script>
-            const yValues = [7,8,8,9,9,9,10,11,14,14,15];
-
             new Chart("myChart", {
                 type: "line",
                 data: {
                     labels: {{ labels | safe }},
                     datasets: [{
-                    backgroundColor:"rgba(0,0,255,1.0)",
-                    borderColor: "rgba(0,0,255,0.1)",
-                    data: {{ values | safe }}
+                        backgroundColor:"rgba(0,0,255,1.0)",
+                        borderColor: "rgba(0,0,255,0.1)",
+                        data: {{ values | safe }}
                     }]
                 }
             });
         </script>
-    </body>
-</html>
-<!-- {% endblock %} -->
+{% endblock %}
