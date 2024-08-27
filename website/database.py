@@ -59,7 +59,8 @@ def check_input(record, vehicles, current_user):
     for mileage in mileages:
         mileages_useable.append(mileage.mileage)
 
-    mileage_last = sorted(mileages_useable)[-1]
+    try: mileage_last = sorted(mileages_useable)[-1]
+    except: mileage_last = 0
 
     if url == 'add-record':
         if record.vehicle not in vehicles: 
@@ -152,9 +153,13 @@ def get_date_mileage(current_user, vehicle):
     all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).all()
     labels = []
     values = []
+    data = []
 
     for line in all_data:
         labels.append(str(line.date))
         values.append(str(line.mileage))
+        data.append({'x': str(line.date), 'y': str(line.mileage)})
     
-    return [labels, values]
+    data = str(data).replace("'", '')
+    
+    return [labels, values, data]

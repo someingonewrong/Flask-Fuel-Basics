@@ -29,7 +29,7 @@ def add_record():
 def new_vehicle():
     if request.method == 'POST':
         result = post_record(current_user)
-        if result == 'success':
+        if result.startswith('Data'):
             flash(result, category='message')
         else:
             flash(result, category='error')
@@ -110,7 +110,7 @@ def mileage_change():
     labels = data[0]
     values = data[1]
     
-    return render_template('mileage_change.html', user=current_user, vehicles = vehicles, labels = labels, values = values)
+    return render_template('mileage_change.html', user=current_user, vehicle = vehicle, vehicles = vehicles, labels = labels, values = values, all_data = data[2])
 
 @views.route('/sql', methods=['GET', 'POST'])
 @login_required
