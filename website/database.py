@@ -1,7 +1,7 @@
 from flask import request
 from .models import Record
 from . import db
-from datetime import date
+import datetime
 import sqlite3
 from os import path
 
@@ -20,8 +20,8 @@ def get_vehicles(current_user):
 
 def post_record(current_user, vehicles = []):
     date_test = request.form.get('date').split('-')
-    try: date_convert = date(int(date_test[0]), int(date_test[1]), int(date_test[2]))
-    except: date_convert = date.today()
+    try: date_convert = datetime.date(int(date_test[0]), int(date_test[1]), int(date_test[2]))
+    except: date_convert = datetime.date.today()
 
     record = Record(vehicle = request.form.get('vehicle'),
                     date = date_convert,
@@ -150,16 +150,29 @@ def sql_query_func(): # It don't work :( not sure how to fix. always get 'unable
         return ['sql failed', 'error']
     
 def get_date_mileage(current_user, vehicle):
-    all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).all()
+    all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
     labels = []
     values = []
     data = []
+    min = 9999999999999
+    max = 0
 
     for line in all_data:
-        labels.append(str(line.date))
-        values.append(str(line.mileage))
-        data.append({'x': str(line.date), 'y': str(line.mileage)})
-    
+        unix_date = int(datetime.datetime.strptime(str(line.date), '%Y-%m-%d').timestamp()) * 1000
+        if unix_date not in labels:
+            labels.append(unix_date)
+        values.append(int(line.mileage))
+        data.append({'x': unix_date, 'y': int(line.mileage)})
+
+        if unix_date < min:
+            min = unix_date
+        if unix_date > max:
+            max = unix_date
+
+    print(min)
+    print(max)
+    print(labels)
+
     data = str(data).replace("'", '')
-    
+
     return [labels, values, data]

@@ -93,7 +93,14 @@ def view_records():
     else:
         table = fetch_records(current_user)
         
-    return render_template('view_records.html', user=current_user, lines = table, vehicles = vehicles, columns = columns, vehicle = vehicle, column = column, updown = updown)
+    return render_template('view_records.html', 
+                           user=current_user, 
+                           lines = table, 
+                           vehicles = vehicles, 
+                           columns = columns, 
+                           vehicle = vehicle, 
+                           column = column, 
+                           updown = updown)
 
 @views.route('/mileage-change', methods=['GET', 'POST'])
 @login_required
@@ -107,10 +114,14 @@ def mileage_change():
         vehicle = request.form.get('vehicle')
     
     data = get_date_mileage(current_user, vehicle)
-    labels = data[0]
-    values = data[1]
     
-    return render_template('mileage_change.html', user=current_user, vehicle = vehicle, vehicles = vehicles, labels = labels, values = values, all_data = data[2])
+    return render_template('mileage_change.html',
+                           user=current_user,
+                           vehicle = vehicle,
+                           vehicles = vehicles,
+                           labels = data[0],
+                           values = data[1],
+                           all_data = data[2])
 
 @views.route('/sql', methods=['GET', 'POST'])
 @login_required
