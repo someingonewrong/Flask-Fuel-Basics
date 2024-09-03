@@ -29,21 +29,13 @@
         <script>
             new Chart("myChart", {
                 type: "line",
-                data: [
-                    {% for line in unix_data %}
-                        { t: new Date({{line[0]}} * 1000),  y: {{line[1]}}  },
-                    {% endfor %}
-                ],
-                options: {
-                    scales: {
-                        xAxes: [{
-                            type: 'time',
-                            time: {
-                                unit: 'month'
-                            }
-                        }]
-                    }
-                }
+                data: {
+                    labels: {{ labels | safe }},
+                    datasets: [{
+                        borderColor: "rgba(0,0,255,1)",
+                        data: {{ all_data | safe }}
+                    }]
+                },
             });
         </script>
 {% endblock %}

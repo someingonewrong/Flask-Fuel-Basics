@@ -154,25 +154,29 @@ def get_date_mileage(current_user, vehicle):
     labels = []
     values = []
     data = []
-    min = 9999999999999
+    date = 0
+    min = 0
     max = 0
 
     for line in all_data:
-        unix_date = int(datetime.datetime.strptime(str(line.date), '%Y-%m-%d').timestamp()) * 1000
-        if unix_date not in labels:
-            labels.append(unix_date)
+        date = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
+        date_output = str(line.date)
         values.append(int(line.mileage))
-        data.append({'x': unix_date, 'y': int(line.mileage)})
+        data.append({'x': date_output, 'y': int(line.mileage)})
 
-        if unix_date < min:
-            min = unix_date
-        if unix_date > max:
-            max = unix_date
+        if min == 0:
+            min = date
 
-    print(min)
-    print(max)
-    print(labels)
+    max = date
 
-    data = str(data).replace("'", '')
+    while min != max:
+        labels.append(min.strftime('%Y-%m-%d'))
+        temp = min + datetime.timedelta(days=1)
+        min = temp
+
+    labels.append(min.strftime('%Y-%m-%d'))
+
+    data = str(data).replace("'", '').replace('-', '')
+    labels = str(labels).replace("'", '').replace('-', '')
 
     return [labels, values, data]
