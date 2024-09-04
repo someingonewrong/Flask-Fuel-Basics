@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
 from . import db
-from .database import post_record, get_vehicles, fetch_records, delete_record, sql_query_func, get_date_mileage
+from .database import post_record, get_vehicles, fetch_records, delete_record, get_date_mileage
 from .csv_things import allowed_file, read_csv, csv_setup
 
 views = Blueprint('views', __name__)
@@ -123,16 +123,15 @@ def mileage_change():
                            values = data[1],
                            all_data = data[2])
 
-@views.route('/sql', methods=['GET', 'POST'])
+@views.route('/mpg-calculator', methods=['GET', 'POST'])
 @login_required
-def sql_query():
-    if current_user.id == 1:
-        if request.method == 'POST':
-            result = sql_query_func()
-            flash(result[0], result[1])
+def mpg_calculator():
+    return render_template('404.html', user=current_user)
 
-        return render_template('sql.html', user=current_user)
-    return '<h1>Nope</h1>'
+@views.route('/fuel-cost', methods=['GET', 'POST'])
+@login_required
+def fuel_cost():
+    return render_template('404.html', user=current_user)
 
 @views.route('/about')
 def about():
