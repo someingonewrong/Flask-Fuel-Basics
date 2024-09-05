@@ -137,13 +137,15 @@ def fuel_cost():
 
     if request.method == 'POST':
         vehicle = request.form.get('vehicle')
+        scale = request.form.get('xScale')
     
-    data = get_fuel_cost(current_user, vehicle)
+    data = get_fuel_cost(current_user, vehicle, scale)
     
     return render_template('fuel_cost.html',
                            user=current_user,
                            vehicle = vehicle,
                            vehicles = vehicles,
+                           scale = scale,
                            labels = data[0],
                            all_data = data[1])
 

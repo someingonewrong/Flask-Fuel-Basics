@@ -19,6 +19,16 @@
                 {% endif %}
             {% endfor %}
         </select>
+        X Axis Scale: &emsp;
+        <select name="xScale" id="xScale">
+            {% if scale == 'date' %}
+                <option value="date" selected>date</option>
+                <option value="instance">instance</option>
+            {% else %}
+                <option value="date">date</option>
+                <option value="instance" selected>instance</option>
+            {% endif %}
+        </select>
         &emsp;
         <button type="submit">Submit</button>
     </form>

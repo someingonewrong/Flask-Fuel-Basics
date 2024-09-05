@@ -160,28 +160,49 @@ def get_date_mileage(current_user, vehicle):
 
     return [labels, data]
 
-def get_fuel_cost(current_user, vehicle):
+def get_fuel_cost(current_user, vehicle, scale):
     all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
     labels = []
     data = []
+    temp = 1.5
     date = 0
     min = 0
     max = 0
 
     for line in all_data:
         date = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
+        date_1 = date + datetime.timedelta(days=1)
         date_output = str(line.date)
-        data.append({'x': date_output, 'y': int(line.mileage)})
+        try: 
+            if int(line.cost)/(int(line.litres)) != 0:
+                temp = "%.2f" % (int(line.cost)/int(line.litres))
+        except: pass
+
+        if scale == 'instance':
+            labels.append(date_output)
+
+        try:
+            if labels[-1] == labels[-2]:
+                date_output = str(date_1.strftime('%Y-%m-%d'))
+                if date_output == labels[-2]:
+                    date_output = str(date_1.strftime('%Y-%m-%d') + datetime.timedelta(days=1))
+        except: pass
+
+
+        data.append({'x': date_output, 'y': temp})
 
         if min == 0:
             min = date
 
-    max = date
+    try: del labels[-1]
+    except: pass
 
-    while min != max:
-        labels.append(min.strftime('%Y-%m-%d'))
-        temp = min + datetime.timedelta(days=1)
-        min = temp
+    max = date
+    if scale == 'date':
+        while min != max:
+            labels.append(min.strftime('%Y-%m-%d'))
+            temp = min + datetime.timedelta(days=1)
+            min = temp
 
     labels.append(min.strftime('%Y-%m-%d'))
 
