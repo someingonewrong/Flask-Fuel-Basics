@@ -44,7 +44,7 @@ def row_csv(text_file, current_user, vehicle):
         if len(temp_date[0]) == 4:
             line_date = date(int(temp_date[0]), int(temp_date[1]), int(temp_date[2]))
         else:
-            line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[0]))
+            line_date = date(int(temp_date[2]), int(temp_date[1]), int(temp_date[0]))
 
         line_mileage = int(line[1].strip('p'))
         line_cost = int_convert(line[3])
@@ -76,7 +76,10 @@ def dict_csv(text_file, current_user, vehicle):
         temp_date = line['date'].split('-')
         try: len(temp_date[1])
         except: temp_date = line['date'].split('/')
-        line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[0]))
+        if len(temp_date[0]) == 4:
+            line_date = date(int(temp_date[0]), int(temp_date[1]), int(temp_date[2]))
+        else:
+            line_date = date(int(temp_date[2]), int(temp_date[1]), int(temp_date[0]))
         line_mileage = int(line['mileage'])
         line_cost = int_convert(line['cost'])
         line_litres = int_convert(line['litres'])

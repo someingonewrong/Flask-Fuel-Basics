@@ -1,36 +1,43 @@
 {% extends "base.html" %} 
-{% block title %}About{% endblock %}
+{% block title %}Fuel Cost{% endblock %}
+
+{% block head_ext %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+{% endblock %}
+
 {% block content%}
 
-<h1>About</h1><br>
+    <h1>Fuel Cost</h1>
+    <form method="post">
+        Vehicle: &emsp;
+        <select name="vehicle" id="vehicle">
+            {% for vehicl in vehicles %}
+                {% if vehicl == vehicle %}
+                    <option value="{{vehicl}}" selected>{{vehicl}}</option>
+                {% else %}
+                    <option value="{{vehicl}}">{{vehicl}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        &emsp;
+        <button type="submit">Submit</button>
+    </form>
 
-<h3>Updates:</h3>
-<li>2024-09-03 21:09 - Mileage change graph now functioning properly and fixed csv import.</li>
-<li>2024-09-01 20:16 - Working on mileage change graph.  Still needs irregular spacing on the x axis</li>
-<li>2024-09-01 19:01 - tidy up.</li>
-<li>2024-08-27 22:14 - remove fuel_tracker.db</li>
-<li>2024-08-27 22:09 - Updated record display and mileage change</li>
-<li>2024-08-27 21:48 - Tidying up git repo.</li>
-<li>2024-08-27 21:34 - Fixed adding new vehicles.</li>
-<li>2024-08-20 21:42 - Updating .gitignore</li>
-<li>2024-08-20 21:39 - Updating commit</li>
-<li>2024-08-20 21:31 - Building intial graphs. Took a while to understand how to actually display a graph!</li>
-<li>2024-08-20 19:25 - Changes to menu layout.</li>
-<li>2024-08-16 09:55 - Fixed Importing csv files.</li>
-<li>2024-08-15 08:22 - CSV download working!</li>
-<li>2024-08-13 22:00 - CSV download function in progress! Definetly not functional yet.</li>
-<li>2024-08-09 15:26 - Deleteing records works!! setup button to export a csv, needs to be programmed though.</li>
-<li>2024-08-07 21:33 - added checkbox column and formatting to table. Began delete record function.</li>
-<li>2024-08-06 21:53 - Finished CSV import program!</li>
-<li>2024-08-05 21:22 - can't remember exactly whats changed but added basic Import CSV function.</li>
-<li>2024-07-22 20:05 - Record viewing and filtering works again.</li>
-<li>2024-07-18 23:54 - Got adding of records and new vehciles to work.  Had problems with users being able to see eachothers vehicles but now they can only see their own.</li>
-<li>2024-07-18 20:25 - Completely changed the setup.  Now using flask_login to athenticate the user and moved the database access and setup to sqlalchemy.  Need to rework record adding and reading of the database.</li>
-<li>2024-07-17 23:48 - Added new-vehicle page, about page and updated read me.</li>
-<li>2024-07-17 23:14 - Updated readme doc and added GBP dropdown to add_record.html</li>
-<li>2024-07-17 13:49 - Added flashing messages to add-record and sql query!</li>
-<li>2024-07-16 16:46 - Added a bit of formatting and a navigation bar!</li>
+    <br>
+        
+    <canvas id="myChart" style="width:100%"></canvas>
 
-
+    <script>
+        new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: {{ labels | safe }},
+                datasets: [{
+                borderColor: "rgba(0,0,255,1)",
+                    data: {{ all_data | safe }}
+                }]
+            },
+        });
+    </script>
 
 {% endblock %}

@@ -136,7 +136,33 @@ def find_record(current_user, id):
 def get_date_mileage(current_user, vehicle):
     all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
     labels = []
-    values = []
+    data = []
+    date = 0
+    min = 0
+    max = 0
+
+    for line in all_data:
+        date = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
+        date_output = str(date.strftime('%Y-%m-%d'))
+        data.append({"x": date_output, "y": int(line.mileage)})
+
+        if min == 0:
+            min = date
+
+    max = date
+
+    while min != max:
+        labels.append(min.strftime('%Y-%m-%d'))
+        temp = min + datetime.timedelta(days=1)
+        min = temp
+
+    labels.append(min.strftime('%Y-%m-%d'))
+
+    return [labels, data]
+
+def get_fuel_cost(current_user, vehicle):
+    all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
+    labels = []
     data = []
     date = 0
     min = 0
@@ -145,7 +171,6 @@ def get_date_mileage(current_user, vehicle):
     for line in all_data:
         date = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
         date_output = str(line.date)
-        values.append(int(line.mileage))
         data.append({'x': date_output, 'y': int(line.mileage)})
 
         if min == 0:
@@ -160,7 +185,4 @@ def get_date_mileage(current_user, vehicle):
 
     labels.append(min.strftime('%Y-%m-%d'))
 
-    data = str(data).replace("'", '').replace('-', '')
-    labels = str(labels).replace("'", '').replace('-', '')
-
-    return [labels, values, data]
+    return [labels, data]
