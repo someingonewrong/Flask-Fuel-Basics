@@ -135,6 +135,8 @@ def fuel_cost():
         vehicle = x
         break
 
+    scale = 'date'
+
     if request.method == 'POST':
         vehicle = request.form.get('vehicle')
         scale = request.form.get('xScale')
