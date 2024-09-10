@@ -1,13 +1,12 @@
 {% extends "base.html" %} 
-{% block title %}Fuel Cost{% endblock %}
+{% block title %}Mileage Change{% endblock %}
 
 {% block head_ext %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 {% endblock %}
 
-{% block content%}
-
-    <h1>Fuel Cost</h1>
+{% block content %}
+    <h1>Mileage Change</h1>
     <form method="post">
         <p>
             Vehicle: &emsp;&emsp;&emsp;
@@ -34,22 +33,10 @@
             </select>
         </p>
         <p>
-            Currency Convertion: &emsp;&emsp;
-            <select name="currencyCon" id="currencyCon">
-                {% if currency_con == 'Y' %}
-                    <option value="N">N</option>
-                    <option value="Y" selected>Y</option>
-                {% else %}
-                    <option value="N" selected>N</option>
-                    <option value="Y">Y</option>
-                {% endif %}
-            </select>
-        </p>
-        <p>
             <button type="submit">Submit</button>
         </p>
     </form>
-
+    
     <br>
         
     <canvas id="myChart" style="width:100%"></canvas>
@@ -67,5 +54,4 @@
             },
         });
     </script>
-
 {% endblock %}

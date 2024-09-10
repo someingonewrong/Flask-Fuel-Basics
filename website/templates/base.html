@@ -46,22 +46,23 @@
                                 Add Records
                             </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/add-record">New Record</a>
-                                    <a class="dropdown-item" href="/new-vehicle">New Vehicle</a>
-                                    <a class="dropdown-item" href="/import-csv">Import CSV</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.add_record') }}">New Record</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.new_vehicle') }}">New Vehicle</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.import_csv') }}">Import CSV</a>
                               </div>
                         </li>
 
-                        <a class="nav-item nav-link" id="viewRecords" href="/view-records">All Records</a>
+                        <a class="nav-item nav-link" id="viewRecords" href="{{ url_for('views.view_records') }}">All Records</a>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Graphs
                             </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/mileage-change">Mileage Change</a>
-                                    <a class="dropdown-item" href="/mpg-calculator">MPG Calculator</a>
-                                    <a class="dropdown-item" href="/fuel-cost">Fuel Cost</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.mileage_change_over_time') }}">Mileage Change Over Time</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.mileage_per_fill') }}">Mileage per Fill</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.mpg_calculator') }}">MPG Calculator</a>
+                                    <a class="dropdown-item" href="{{ url_for('views.fuel_cost') }}">Fuel Cost</a>
                               </div>
                         </li>
 

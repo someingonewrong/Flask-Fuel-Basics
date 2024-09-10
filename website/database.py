@@ -1,7 +1,9 @@
 from flask import request
 from .models import Record
 from . import db
+from .currency_converter import update_ecb_file
 import datetime
+
 from os import path
 
 def get_vehicles(current_user):
@@ -133,7 +135,7 @@ def delete_record(current_user, records):
 def find_record(current_user, id):
     return Record.query.filter(Record.user_id == current_user.id, Record.id == id).all()[0]
     
-def get_date_mileage(current_user, vehicle):
+def get_date_mileage(current_user, vehicle, scale):
     all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
     labels = []
     data = []
@@ -146,21 +148,25 @@ def get_date_mileage(current_user, vehicle):
         date_output = str(date.strftime('%Y-%m-%d'))
         data.append({"x": date_output, "y": int(line.mileage)})
 
+        if scale == 'instance':
+            labels.append(date_output)
+
         if min == 0:
             min = date
 
     max = date
 
-    while min != max:
-        labels.append(min.strftime('%Y-%m-%d'))
-        temp = min + datetime.timedelta(days=1)
-        min = temp
-
-    labels.append(min.strftime('%Y-%m-%d'))
+    if scale == 'date':
+        while min != max:
+            print(min)
+            labels.append(min.strftime('%Y-%m-%d'))
+            temp = min + datetime.timedelta(days=1)
+            min = temp
+        labels.append(date_output)
 
     return [labels, data]
 
-def get_fuel_cost(current_user, vehicle, scale):
+def get_fuel_cost(current_user, vehicle, scale, currency_con):
     all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
     labels = []
     data = []
@@ -169,12 +175,20 @@ def get_fuel_cost(current_user, vehicle, scale):
     min = 0
     max = 0
 
+    if currency_con == 'Y':
+        c = update_ecb_file()
+        print(c)
+
     for line in all_data:
-        date = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
-        date_1 = date + datetime.timedelta(days=1)
+        date_0 = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
+        date_1 = date_0 + datetime.timedelta(days=1)
         date_output = str(line.date)
         try: 
             if int(line.cost)/(int(line.litres)) != 0:
+                try:
+                    if currency_con == 'Y':
+                        line.cost = c.convert(int(line.cost), line.currency, 'GBP', date=line.date)
+                except Exception as e: print(e)
                 temp = "%.2f" % (int(line.cost)/int(line.litres))
         except: pass
 
@@ -188,22 +202,22 @@ def get_fuel_cost(current_user, vehicle, scale):
                     date_output = str(date_1.strftime('%Y-%m-%d') + datetime.timedelta(days=1))
         except: pass
 
-
         data.append({'x': date_output, 'y': temp})
 
         if min == 0:
-            min = date
+            min = date_0
 
     try: del labels[-1]
     except: pass
 
-    max = date
+    max = date_0
+
     if scale == 'date':
         while min != max:
             labels.append(min.strftime('%Y-%m-%d'))
             temp = min + datetime.timedelta(days=1)
             min = temp
-
-    labels.append(min.strftime('%Y-%m-%d'))
+        labels.append(min.strftime('%Y-%m-%d'))
+    else: labels.append(date_output)
 
     return [labels, data]

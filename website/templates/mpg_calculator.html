@@ -33,7 +33,8 @@
             data: {
                 labels: {{ labels | safe }},
                 datasets: [{
-                borderColor: "rgba(0,0,255,1)",
+                    lineTension: 0,
+                    borderColor: "rgba(0,0,255,1)",
                     data: {{ all_data | safe }}
                 }]
             },

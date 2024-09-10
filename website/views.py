@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from . import db
 from .database import post_record, get_vehicles, fetch_records, delete_record, get_date_mileage, get_fuel_cost
 from .csv_things import allowed_file, read_csv, csv_setup
+from .currency_converter import update_ecb_file
 
 views = Blueprint('views', __name__)
 
@@ -102,25 +103,34 @@ def view_records():
                            column = column, 
                            updown = updown)
 
-@views.route('/mileage-change', methods=['GET', 'POST'])
+@views.route('/mileage-change-over-time', methods=['GET', 'POST'])
 @login_required
-def mileage_change():
+def mileage_change_over_time():
     vehicles = get_vehicles(current_user)
     for x in vehicles:
         vehicle = x
         break
 
+    scale = 'date'
+
     if request.method == 'POST':
         vehicle = request.form.get('vehicle')
+        scale = request.form.get('xScale')
     
-    data = get_date_mileage(current_user, vehicle)
+    data = get_date_mileage(current_user, vehicle, scale)
     
-    return render_template('mileage_change.html',
+    return render_template('mileage_change_over_time.html',
                            user=current_user,
                            vehicle = vehicle,
                            vehicles = vehicles,
+                           scale = scale,
                            labels = data[0],
                            all_data = data[1])
+
+@views.route('/mileage-per-fill', methods=['GET', 'POST'])
+@login_required
+def mileage_per_fill():
+    return render_template('about.html', user=current_user)
 
 @views.route('/mpg-calculator', methods=['GET', 'POST'])
 @login_required
@@ -136,18 +146,21 @@ def fuel_cost():
         break
 
     scale = 'date'
+    currency_con = 'N'
 
     if request.method == 'POST':
         vehicle = request.form.get('vehicle')
         scale = request.form.get('xScale')
+        currency_con = request.form.get('currencyCon')
     
-    data = get_fuel_cost(current_user, vehicle, scale)
+    data = get_fuel_cost(current_user, vehicle, scale, currency_con)
     
     return render_template('fuel_cost.html',
                            user=current_user,
                            vehicle = vehicle,
                            vehicles = vehicles,
                            scale = scale,
+                           currency_con = currency_con,
                            labels = data[0],
                            all_data = data[1])
 
