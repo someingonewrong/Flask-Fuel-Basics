@@ -158,7 +158,6 @@ def get_date_mileage(current_user, vehicle, scale):
 
     if scale == 'date':
         while min != max:
-            print(min)
             labels.append(min.strftime('%Y-%m-%d'))
             temp = min + datetime.timedelta(days=1)
             min = temp
