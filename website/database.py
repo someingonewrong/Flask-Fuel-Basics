@@ -176,7 +176,6 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con):
 
     if currency_con == 'Y':
         c = update_ecb_file()
-        print(c)
 
     for line in all_data:
         date_0 = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
