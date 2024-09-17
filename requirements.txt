@@ -1,6 +1,0 @@
-flask
-flask_login
-flask_sqlalchemy
-currencyconverter
-werkzeug.security
-gunicorn
