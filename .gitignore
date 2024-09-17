@@ -1,2 +1,4 @@
 *.csv
 *.db
+*.zip
+.DS_Store
