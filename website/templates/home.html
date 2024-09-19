@@ -1,5 +1,16 @@
 {% extends "base.html" %} 
 {% block title %}Home{% endblock %}
+
+{% block head_ext %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+{% endblock %}
+
 {% block content%}
 
     <img src="../static/Fuel-Tracker-16-07-2024.png" alt="Fuel Tracker"><br>
