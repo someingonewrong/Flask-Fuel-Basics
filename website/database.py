@@ -165,12 +165,11 @@ def get_date_mileage(current_user, vehicle, scale):
 
     return [labels, data]
 
-def get_fuel_cost(current_user, vehicle, scale, currency_con):
+def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
     all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
     labels = []
     data = []
     temp = 1.5
-    date = 0
     min = 0
     max = 0
 
@@ -219,3 +218,9 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con):
     else: labels.append(date_output)
 
     return [labels, data]
+
+def has_foreign_currency(current_user, vehicle):
+    values = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle, Record.currency != 'GBP').order_by(Record.currency).all()
+    if values.__len__() > 0:
+        return 'Y'
+    return 'N'

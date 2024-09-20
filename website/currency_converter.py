@@ -11,7 +11,7 @@ def fetch_ecb_file(filename):
     print('\nUpdating converter file...')
     try:
         urllib.request.urlretrieve(ECB_URL, filename)
-        print('File updated')
+        print('File updated to ' + filename)
     except: raise
 
 def update_ecb_file():
@@ -36,7 +36,6 @@ def update_ecb_file():
     for file in file_names:
         try:
             c = CurrencyConverter(fallback_on_missing_rate=True)
-            print('Loaded file ' + file)
             break
         except: print('broken')
 
