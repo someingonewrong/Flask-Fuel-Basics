@@ -34,9 +34,9 @@
             </select>
         </p>
         <p>
-            Currency Convertion: &emsp;&emsp;
-            <select name="currencyCon" id="currencyCon">
-                {% if currency_con == 'Y' %}
+            Inflation Convertion: &emsp;&emsp;
+            <select name="inflationCon" id="inflationCon">
+                {% if inflation_on == 'Y' %}
                     <option value="N">N</option>
                     <option value="Y" selected>Y</option>
                 {% else %}
@@ -45,6 +45,20 @@
                 {% endif %}
             </select>
         </p>
+        {% if foreign_currency == 'Y' %}
+            <p>
+                Currency Convertion: &emsp;&emsp;
+                <select name="currencyCon" id="currencyCon">
+                    {% if currency_con == 'Y' %}
+                        <option value="N">N</option>
+                        <option value="Y" selected>Y</option>
+                    {% else %}
+                        <option value="N" selected>N</option>
+                        <option value="Y">Y</option>
+                    {% endif %}
+                </select>
+            </p>
+        {% endif %}
         <p>
             <button type="submit">Submit</button>
         </p>

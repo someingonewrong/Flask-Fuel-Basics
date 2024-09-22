@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
 from . import db
-from .database import post_record, get_vehicles, fetch_records, delete_record, get_date_mileage, get_fuel_cost
+from .database import post_record, get_vehicles, fetch_records, delete_record, get_date_mileage, get_fuel_cost, has_foreign_currency
 from .csv_things import allowed_file, read_csv, csv_setup
 from .currency_converter import update_ecb_file
 
@@ -141,19 +141,25 @@ def mpg_calculator():
 @login_required
 def fuel_cost():
     vehicles = get_vehicles(current_user)
+    
     for x in vehicles:
         vehicle = x
         break
 
     scale = 'date'
     currency_con = 'N'
+    inflation_con = 'N'
 
     if request.method == 'POST':
         vehicle = request.form.get('vehicle')
         scale = request.form.get('xScale')
-        currency_con = request.form.get('currencyCon')
+        try: currency_con = request.form.get('currencyCon')
+        except: currency_con = 'N'
+        inflation_con = request.form.get('inflationCon')
     
-    data = get_fuel_cost(current_user, vehicle, scale, currency_con)
+    foreign_currency = has_foreign_currency(current_user, vehicle)
+
+    data = get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con)
     
     return render_template('fuel_cost.html',
                            user=current_user,
@@ -161,6 +167,8 @@ def fuel_cost():
                            vehicles = vehicles,
                            scale = scale,
                            currency_con = currency_con,
+                           foreign_currency = foreign_currency,
+                           inflation_con = 'N',
                            labels = data[0],
                            all_data = data[1])
 

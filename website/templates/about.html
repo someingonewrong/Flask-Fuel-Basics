@@ -1,45 +1,73 @@
 {% extends "base.html" %} 
 {% block title %}About{% endblock %}
+
+{% block head_ext %}
+<style type="text/css">
+    .spoilerbutton {display:block; border:none; padding: 0px 0px; margin:10px 0px; font-size:150%; font-weight: bold; color:#000000; background-color:transparent; outline:0; 
+    }
+    .spoiler {overflow:hidden;}
+    .spoiler > div {-webkit-transition: all 0s ease;-moz-transition: margin 0s ease;-o-transition: all 0s ease;transition: margin 0s ease;}
+    .spoilerbutton[value="Show >"] + .spoiler > div {margin-top:-500%;}
+    .spoilerbutton[value="Hide ⌄Solution"] + .spoiler {padding:5px;} 
+    </style> 
+{% endblock %}
+
 {% block content%}
 
 <h1>About</h1><br>
 
-<h3>Updates:</h3>
-<li>2024-09-17 10:10 - Updating .gitignore</li>
-<li>2024-09-17 10:06 - Removimg .zip files</li>
-<li>2024-09-16 19:24 - tidying repo</li>
-<li>2024-09-10 23:04 - removed extra print()</li>
-<li>2024-09-10 22:52 - Added currency converter to graphs, x axis instance option to mileage change and new graph dropdown option.</li>
-<li>2024-09-05 02:49 - Fixing Fuel cost page.</li>
-<li>2024-09-05 02:40 - Added fuel cost over time graph. Still need to fix multiple fills on concurrent days.</li>
-<li>2024-09-05 01:09 - fixing csv issue</li>
-<li>2024-09-04 15:23 - Added 404 page and setup for 2 new graph pages.</li>
-<li>2024-09-03 21:09 - Mileage change graph now functioning properly and fixed csv import.</li>
-<li>2024-09-01 20:16 - Working on mileage change graph.  Still needs irregular spacing on the x axis</li>
-<li>2024-09-01 19:01 - tidy up.</li>
-<li>2024-08-27 22:14 - remove fuel_tracker.db</li>
-<li>2024-08-27 22:09 - Updated record display and mileage change</li>
-<li>2024-08-27 21:48 - Tidying up git repo.</li>
-<li>2024-08-27 21:34 - Fixed adding new vehicles.</li>
-<li>2024-08-20 21:42 - Updating .gitignore</li>
-<li>2024-08-20 21:39 - Updating commit</li>
-<li>2024-08-20 21:31 - Building intial graphs. Took a while to understand how to actually display a graph!</li>
-<li>2024-08-20 19:25 - Changes to menu layout.</li>
-<li>2024-08-16 09:55 - Fixed Importing csv files.</li>
-<li>2024-08-15 08:22 - CSV download working!</li>
-<li>2024-08-13 22:00 - CSV download function in progress! Definetly not functional yet.</li>
-<li>2024-08-09 15:26 - Deleteing records works!! setup button to export a csv, needs to be programmed though.</li>
-<li>2024-08-07 21:33 - added checkbox column and formatting to table. Began delete record function.</li>
-<li>2024-08-06 21:53 - Finished CSV import program!</li>
-<li>2024-08-05 21:22 - can't remember exactly whats changed but added basic Import CSV function.</li>
-<li>2024-07-22 20:05 - Record viewing and filtering works again.</li>
-<li>2024-07-18 23:54 - Got adding of records and new vehciles to work.  Had problems with users being able to see eachothers vehicles but now they can only see their own.</li>
-<li>2024-07-18 20:25 - Completely changed the setup.  Now using flask_login to athenticate the user and moved the database access and setup to sqlalchemy.  Need to rework record adding and reading of the database.</li>
-<li>2024-07-17 23:48 - Added new-vehicle page, about page and updated read me.</li>
-<li>2024-07-17 23:14 - Updated readme doc and added GBP dropdown to add_record.html</li>
-<li>2024-07-17 13:49 - Added flashing messages to add-record and sql query!</li>
-<li>2024-07-16 16:46 - Added a bit of formatting and a navigation bar!</li>
+<h2>Updates:</h2></p>
 
+<h3>Main:</h3>
+<input class="spoilerbutton" type="button" value="Show >" onclick="this.value=this.value=='Show >'?'Hide ⌄':'Show >';">
+<div class="spoiler"><div>
 
+    <li>2024-09-17 10:13 - More tidying</li>
+    <li>2024-09-17 10:10 - Updating .gitignore</li>
+    <li>2024-09-17 10:06 - Removimg .zip files</li>
+    <li>2024-09-16 19:24 - tidying repo</li>
+    <li>2024-09-10 23:04 - removed extra print()</li>
+    <li>2024-09-10 22:52 - Added currency converter to graphs, x axis instance option to mileage change and new graph dropdown option.</li>
+    <li>2024-09-05 02:49 - Fixing Fuel cost page.</li>
+    <li>2024-09-05 02:40 - Added fuel cost over time graph. Still need to fix multiple fills on concurrent days.</li>
+    <li>2024-09-05 01:09 - fixing csv issue</li>
+    <li>2024-09-04 15:23 - Added 404 page and setup for 2 new graph pages.</li>
+    <li>2024-09-03 21:09 - Mileage change graph now functioning properly and fixed csv import.</li>
+    <li>2024-09-01 20:16 - Working on mileage change graph.  Still needs irregular spacing on the x axis</li>
+    <li>2024-09-01 19:01 - tidy up.</li>
+    <li>2024-08-27 22:14 - remove fuel_tracker.db</li>
+    <li>2024-08-27 22:09 - Updated record display and mileage change</li>
+    <li>2024-08-27 21:48 - Tidying up git repo.</li>
+    <li>2024-08-27 21:34 - Fixed adding new vehicles.</li>
+    <li>2024-08-20 21:42 - Updating .gitignore</li>
+    <li>2024-08-20 21:39 - Updating commit</li>
+    <li>2024-08-20 21:31 - Building intial graphs. Took a while to understand how to actually display a graph!</li>
+    <li>2024-08-20 19:25 - Changes to menu layout.</li>
+    <li>2024-08-16 09:55 - Fixed Importing csv files.</li>
+    <li>2024-08-15 08:22 - CSV download working!</li>
+    <li>2024-08-13 22:00 - CSV download function in progress! Definetly not functional yet.</li>
+    <li>2024-08-09 15:26 - Deleteing records works!! setup button to export a csv, needs to be programmed though.</li>
+    <li>2024-08-07 21:33 - added checkbox column and formatting to table. Began delete record function.</li>
+    <li>2024-08-06 21:53 - Finished CSV import program!</li>
+    <li>2024-08-05 21:22 - can't remember exactly whats changed but added basic Import CSV function.</li>
+    <li>2024-07-22 20:05 - Record viewing and filtering works again.</li>
+    <li>2024-07-18 23:54 - Got adding of records and new vehciles to work.  Had problems with users being able to see eachothers vehicles but now they can only see their own.</li>
+    <li>2024-07-18 20:25 - Completely changed the setup.  Now using flask_login to athenticate the user and moved the database access and setup to sqlalchemy.  Need to rework record adding and reading of the database.</li>
+    <li>2024-07-17 23:48 - Added new-vehicle page, about page and updated read me.</li>
+    <li>2024-07-17 23:14 - Updated readme doc and added GBP dropdown to add_record.html</li>
+    <li>2024-07-17 13:49 - Added flashing messages to add-record and sql query!</li>
+    <li>2024-07-16 16:46 - Added a bit of formatting and a navigation bar!</li>
+
+</div></div><br>
+
+<h3>Build:</h3>
+<input class="spoilerbutton" type="button" value="Show >" onclick="this.value=this.value=='Show >'?'Hide ⌄':'Show >';">
+<div class="spoiler"><div>
+
+    <li>2024-09-20 20:07 - Currency converter displayed when vehicle has a currency other than GBP</li>
+    <li>2024-09-20 00:00 - Added confirm to delete records and image scaling.</li>
+    <li>2024-09-18 10:32 - Branch Created</li>
+
+</div></div>
 
 {% endblock %}

@@ -119,7 +119,7 @@
         <br>
         <p>
             Delete selected items: 
-            <input type='submit' name='delete' value='Delete'><br><br>
+            <input type='submit' name='delete' value='Delete' onclick="return confirm('Are you sure you want to delete records?')" /><br><br>
             Export selected items as CSV:
             <input type='submit' name='export' value='Export'>
         </p>

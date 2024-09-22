@@ -2,6 +2,7 @@ from flask import request
 from .models import Record
 from . import db
 from .currency_converter import update_ecb_file
+from .inflation_converter import inflation_convert
 import datetime
 
 from os import path
@@ -165,12 +166,11 @@ def get_date_mileage(current_user, vehicle, scale):
 
     return [labels, data]
 
-def get_fuel_cost(current_user, vehicle, scale, currency_con):
+def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
     all_data = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
     labels = []
     data = []
     temp = 1.5
-    date = 0
     min = 0
     max = 0
 
@@ -200,7 +200,7 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con):
                     date_output = str(date_1.strftime('%Y-%m-%d') + datetime.timedelta(days=1))
         except: pass
 
-        data.append({'x': date_output, 'y': temp})
+        data.append({'x': date_output, 'y': temp, 'currency': line.currency})
 
         if min == 0:
             min = date_0
@@ -218,4 +218,13 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con):
         labels.append(min.strftime('%Y-%m-%d'))
     else: labels.append(date_output)
 
+    if inflation_con == 'Y':
+        data = inflation_convert(data, currency_con)
+
     return [labels, data]
+
+def has_foreign_currency(current_user, vehicle):
+    values = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle, Record.currency != 'GBP').order_by(Record.currency).all()
+    if values.__len__() > 0:
+        return 'Y'
+    return 'N'
