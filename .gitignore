@@ -2,3 +2,4 @@
 *.db
 *.zip
 .DS_Store
+currency_converter.py
