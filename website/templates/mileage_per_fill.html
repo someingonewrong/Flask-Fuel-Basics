@@ -1,0 +1,75 @@
+{% extends "base.html" %} 
+{% block title %}Mileage Per Fill{% endblock %}
+
+{% block head_ext %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Mileage Per Fill</h1>
+    <form method="post">
+        <p>
+            Vehicle: &emsp;&emsp;&emsp;
+            <select name="vehicle" id="vehicle">
+                {% for vehicl in vehicles %}
+                    {% if vehicl == vehicle %}
+                        <option value="{{vehicl}}" selected>{{vehicl}}</option>
+                    {% else %}
+                        <option value="{{vehicl}}">{{vehicl}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            X Axis Scale: &emsp;
+            <select name="xScale" id="xScale">
+                {% if scale == 'date' %}
+                    <option value="date" selected>date</option>
+                    <option value="instance">instance</option>
+                {% else %}
+                    <option value="date">date</option>
+                    <option value="instance" selected>instance</option>
+                {% endif %}
+            </select>
+        </p>
+        <p></p>
+            Smoothing Average: &emsp;
+            <select name="smoothing" id="smoothing">
+                {% if smoothing == '1' %}
+                    <option value="1" selected>1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                {% elif smoothing == '5' %}
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5" selected>5</option>
+                {% else %}
+                    <option value="1">1</option>
+                    <option value="3" selected>3</option>
+                    <option value="5">5</option>
+                {% endif %}
+            </select>
+        </p>
+        <p>
+            <button type="submit">Submit</button>
+        </p>
+    </form>
+    
+    <br>
+        
+    <canvas id="myChart" style="width:100%"></canvas>
+
+    <script>
+        new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: {{ labels | safe }},
+                datasets: [{
+                    lineTension: 0,
+                    borderColor: "rgba(0,0,255,1)",
+                    data: {{ all_data | safe }}
+                }]
+            },
+        });
+    </script>
+{% endblock %}
