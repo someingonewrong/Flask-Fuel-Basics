@@ -5,7 +5,7 @@ from .smoothing import one, three, five, all
 import datetime
 
 def get_date_mileage(current_user, vehicle, scale):
-    all_data = fetch_records(current_user, vehicle)
+    all_data = fetch_records(current_user, vehicle, 'mileage')
     labels = []
     data = []
     date = 0
@@ -35,7 +35,7 @@ def get_date_mileage(current_user, vehicle, scale):
     return [labels, data]
 
 def get_per_fill(current_user, vehicle, scale, smoothing):
-    all_data = fetch_records(current_user, vehicle)
+    all_data = fetch_records(current_user, vehicle, 'mileage')
     labels = []
     data = []
     data3 = []
@@ -86,7 +86,7 @@ def get_per_fill(current_user, vehicle, scale, smoothing):
     return [labels, data, data3, data5]
 
 def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
-    all_data = fetch_records(current_user, vehicle)
+    all_data = fetch_records(current_user, vehicle, 'mileage')
     labels = []
     data = []
     temp = 1.5

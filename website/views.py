@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
-from . import db
 from .database import post_record, get_vehicles, fetch_records, delete_record, has_foreign_currency
 from .graphing import get_date_mileage, get_fuel_cost, get_per_fill
 from .csv_things import allowed_file, read_csv, csv_setup
@@ -70,20 +69,23 @@ def view_records():
     column = 'id'
     updown = 'DESC'
 
-    if request.method == 'POST' and 'vehicle' in request.form:
+    if request.method == 'POST':
         vehicle = request.form.get('vehicle')
         column = request.form.get('column')
         updown = request.form.get('updown')
-        table = fetch_records(current_user, vehicle, column, updown)
+        if 'vehicle' in request.form:
+            table = fetch_records(current_user, vehicle=vehicle, column=column, updown=updown)
+    else:
+        table = fetch_records(current_user, '*', 'id', 'DESC')
         
-    elif request.method == 'POST' and len(request.form) > 0 and request.form.get('delete') == 'Delete':
+    if request.method == 'POST' and len(request.form) > 0 and request.form.get('delete') == 'Delete':
         message = delete_record(current_user, request.form)
         flash(message[0], message[1])
-        table = fetch_records(current_user)
+        table = fetch_records(current_user, vehicle, column, updown)
 
     elif request.method == 'POST' and len(request.form) > 1 and request.form.get('export') == 'Export':
         file = csv_setup(current_user, request.form)
-        table = fetch_records(current_user)
+        table = fetch_records(current_user, vehicle, column, updown)
         
         response = make_response(file[1])
         cd = f'attachment; filename={file[0]}'
@@ -91,8 +93,6 @@ def view_records():
         response.mimetype='text/csv'
 
         return response
-    else:
-        table = fetch_records(current_user)
         
     return render_template('view_records.html', 
                            user=current_user, 
