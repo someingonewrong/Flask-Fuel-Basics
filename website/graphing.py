@@ -1,6 +1,7 @@
 from .currency_converter import update_ecb_file
 from .inflation_converter import inflation_convert
 from .database import fetch_records
+from .smoothing import one, three, five, all
 import datetime
 
 def get_date_mileage(current_user, vehicle, scale):
@@ -37,6 +38,8 @@ def get_per_fill(current_user, vehicle, scale, smoothing):
     all_data = fetch_records(current_user, vehicle)
     labels = []
     data = []
+    data3 = []
+    data5 = []
     date = 0
     min = 0
     max = 0
@@ -48,29 +51,12 @@ def get_per_fill(current_user, vehicle, scale, smoothing):
         date_output = str(date.strftime('%Y-%m-%d'))
         mileage.append(int(line.mileage))
 
-        if int(smoothing) == 1:
-            try: mileage_change = int(mileage[-1]) - int(mileage[-2])
-            except: pass
-        elif int(smoothing) == 3:
-            try: mileage_change = (int(mileage[-1]) - int(mileage[-4])) / 3
-            except: 
-                try: mileage_change = (int(mileage[-1]) - int(mileage[-3])) / 2
-                except: 
-                    try: mileage_change = int(mileage[-1]) - int(mileage[-2])
-                    except: pass
-        elif int(smoothing) == 5:
-            try: mileage_change = (int(mileage[-1]) - int(mileage[-6])) / 5
-            except:
-                try: mileage_change = (int(mileage[-1]) - int(mileage[-5])) / 4
-                except:
-                    try: mileage_change = (int(mileage[-1]) - int(mileage[-4])) / 3
-                    except: 
-                        try: mileage_change = (int(mileage[-1]) - int(mileage[-3])) / 2
-                        except: 
-                            try: mileage_change = int(mileage[-1]) - int(mileage[-2])
-                            except: pass
-
-        print(mileage_change)
+        if smoothing == '3':
+            mileage_change = three(mileage)
+        elif smoothing == '5':
+            mileage_change = five(mileage)
+        else:
+            mileage_change = one(mileage)
 
         data.append({"x": date_output, "y": mileage_change})
 
@@ -80,7 +66,13 @@ def get_per_fill(current_user, vehicle, scale, smoothing):
         if min == 0:
             min = date
 
-    print(mileage)
+    data.pop(0)
+
+    if smoothing == 'all':
+        data3 = all(all_data, 3)
+        data3.pop(0)
+        data5 = all(all_data, 5)
+        data5.pop(0)
 
     max = date
 
@@ -91,7 +83,7 @@ def get_per_fill(current_user, vehicle, scale, smoothing):
             min = temp
         labels.append(date_output)
 
-    return [labels, data]
+    return [labels, data, data3, data5]
 
 def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
     all_data = fetch_records(current_user, vehicle)

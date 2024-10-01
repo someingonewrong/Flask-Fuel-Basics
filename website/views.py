@@ -152,7 +152,9 @@ def mileage_per_fill():
                            scale = scale,
                            smoothing = smoothing,
                            labels = data[0],
-                           all_data = data[1])
+                           data = data[1],
+                           data3 = data[2],
+                           data5 = data[3])
 
 @views.route('/mpg-calculator', methods=['GET', 'POST'])
 @login_required
