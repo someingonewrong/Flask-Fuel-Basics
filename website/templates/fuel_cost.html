@@ -79,6 +79,31 @@
                     data: {{ all_data | safe }}
                 }]
             },
+            options: {
+                responsive: true,
+                elements: {
+                    line: {
+                        fill: false // Disables fill under the line
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: '£ per Litre'
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date of Fill'
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                }
+            }
         });
     </script>
 

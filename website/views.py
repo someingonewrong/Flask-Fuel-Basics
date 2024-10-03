@@ -174,7 +174,7 @@ def mpg_calculator():
     
     data = get_MPG(current_user, vehicle, scale, smoothing)
     
-    return render_template('mileage_per_fill.html',
+    return render_template('mpg_calculator.html',
                            user=current_user,
                            vehicle = vehicle,
                            vehicles = vehicles,

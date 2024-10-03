@@ -9,20 +9,61 @@
 
     <h1>MPG Calculator</h1>
     <form method="post">
-        Vehicle: &emsp;
-        <select name="vehicle" id="vehicle">
-            {% for vehicl in vehicles %}
-                {% if vehicl == vehicle %}
-                    <option value="{{vehicl}}" selected>{{vehicl}}</option>
+        <p>
+            Vehicle: &emsp;&emsp;&emsp;
+            <select name="vehicle" id="vehicle">
+                {% for vehicl in vehicles %}
+                    {% if vehicl == vehicle %}
+                        <option value="{{vehicl}}" selected>{{vehicl}}</option>
+                    {% else %}
+                        <option value="{{vehicl}}">{{vehicl}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            X Axis Scale: &emsp;
+            <select name="xScale" id="xScale">
+                {% if scale == 'date' %}
+                    <option value="date" selected>date</option>
+                    <option value="instance">instance</option>
                 {% else %}
-                    <option value="{{vehicl}}">{{vehicl}}</option>
+                    <option value="date">date</option>
+                    <option value="instance" selected>instance</option>
                 {% endif %}
-            {% endfor %}
-        </select>
-        &emsp;
-        <button type="submit">Submit</button>
+            </select>
+        </p>
+        <p></p>
+            Smoothing Average: &emsp;
+            <select name="smoothing" id="smoothing">
+                {% if smoothing == '1' %}
+                    <option value="1" selected>1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="all">all</option>
+                {% elif smoothing == '3' %}
+                    <option value="1">1</option>
+                    <option value="3" selected>3</option>
+                    <option value="5">5</option>
+                    <option value="all">all</option>
+                {% elif smoothing == '5' %}
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5" selected>5</option>
+                    <option value="all">all</option>
+                {% else %}
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="all" selected>all</option>
+                {% endif %}
+            </select>
+        </p>
+        <p>
+            <button type="submit">Submit</button>
+        </p>
     </form>
-
+    
     <br>
         
     <canvas id="myChart" style="width:100%"></canvas>
@@ -33,11 +74,64 @@
             data: {
                 labels: {{ labels | safe }},
                 datasets: [{
+                    {% if smoothing == '1' %}
+                        label: 'raw',
+                        borderColor: "rgba(0,0,255,1)",
+                    {% elif smoothing == '3' %}
+                        label: 'average of 3',
+                        borderColor: "rgba(0,255,0,1)",
+                    {% elif smoothing == '5' %}
+                        label: 'average of 5',
+                        borderColor: "rgba(255,0,0,1)",
+                    {% else %}
+                        label: 'raw',
+                        borderColor: "rgba(0,0,255,0.3)",
+                    {% endif %}
+
                     lineTension: 0,
-                    borderColor: "rgba(0,0,255,1)",
-                    data: {{ all_data | safe }}
-                }]
+                    data: {{ data | safe }}
+                    }
+                    {% if smoothing == 'all' %}
+                        ,{
+                            label: 'average of 3',
+                            lineTension: 0,
+                            borderColor: "rgba(0,255,0,0.5)",
+                            data: {{ data3 | safe }}
+                        },{
+                            label: 'average of 5',
+                            lineTension: 0,
+                            borderColor: "rgba(255,0,0,1)",
+                            data: {{ data5 | safe }}
+                        }
+                    {% endif %}
+                ]
             },
+            options: {
+                responsive: true,
+                elements: {
+                    line: {
+                        fill: false // Disables fill under the line
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            {% if smoothing == '1' %}
+                                labelString: 'MPG per fill'
+                            {% else %}
+                                labelString: 'MPG average'
+                            {% endif %}
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date of Fill'
+                        }
+                    }]
+                }
+            }
         });
     </script>
 

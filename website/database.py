@@ -115,6 +115,9 @@ def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'DESC'):
 
     return table
 
+def fetch_records_graph(current_user, vehicle):
+    return Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
+
 def delete_record(current_user, records):
     line_n = 0
     try:

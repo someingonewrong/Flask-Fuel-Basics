@@ -105,6 +105,32 @@
                     {% endif %}
                 ]
             },
+            options: {
+                responsive: true,
+                elements: {
+                    line: {
+                        fill: false // Disables fill under the line
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            {% if smoothing == '1' %}
+                                labelString: 'Mileage per fill'
+                            {% else %}
+                                labelString: 'Mileage average'
+                            {% endif %}
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date of Fill'
+                        }
+                    }]
+                }
+            }
         });
     </script>
 {% endblock %}

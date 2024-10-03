@@ -52,6 +52,31 @@
                     data: {{ all_data | safe }}
                 }]
             },
+            options: {
+                responsive: true,
+                elements: {
+                    line: {
+                        fill: false // Disables fill under the line
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Mileage'
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date of Mileage Record'
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                }
+            }
         });
     </script>
 {% endblock %}
