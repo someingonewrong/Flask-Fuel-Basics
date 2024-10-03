@@ -1,100 +1,117 @@
 from .currency_converter import update_ecb_file
 from .inflation_converter import inflation_convert
-from .database import fetch_records
-import datetime
+from .database import fetch_records_graph
+from .smoothing import mileage_one, mileage_three, mileage_five, mileage_all, mpg_one, mpg_three, mpg_five, mpg_all
+from datetime import datetime
+from datetime import timedelta
 
 def get_date_mileage(current_user, vehicle, scale):
-    all_data = fetch_records(current_user, vehicle)
+    all_data = fetch_records_graph(current_user, vehicle)
     labels = []
     data = []
-    date = 0
     min = 0
     max = 0
 
     for line in all_data:
-        date = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
-        date_output = str(date.strftime('%Y-%m-%d'))
+        date_output = str(line.date)
         data.append({"x": date_output, "y": int(line.mileage)})
 
         if scale == 'instance':
             labels.append(date_output)
 
-        if min == 0:
-            min = date
-
-    max = date
-
     if scale == 'date':
-        while min != max:
-            labels.append(min.strftime('%Y-%m-%d'))
-            temp = min + datetime.timedelta(days=1)
-            min = temp
-        labels.append(date_output)
+        labels = get_labels(min, max, data)
 
     return [labels, data]
 
 def get_per_fill(current_user, vehicle, scale, smoothing):
-    all_data = fetch_records(current_user, vehicle)
+    all_data = fetch_records_graph(current_user, vehicle)
     labels = []
     data = []
-    date = 0
+    data3 = []
+    data5 = []
     min = 0
     max = 0
     mileage = []
     mileage_change = 0
 
     for line in all_data:
-        date = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
-        date_output = str(date.strftime('%Y-%m-%d'))
+        date_output = str(line.date)
         mileage.append(int(line.mileage))
 
-        if int(smoothing) == 1:
-            try: mileage_change = int(mileage[-1]) - int(mileage[-2])
-            except: pass
-        elif int(smoothing) == 3:
-            try: mileage_change = (int(mileage[-1]) - int(mileage[-4])) / 3
-            except: 
-                try: mileage_change = (int(mileage[-1]) - int(mileage[-3])) / 2
-                except: 
-                    try: mileage_change = int(mileage[-1]) - int(mileage[-2])
-                    except: pass
-        elif int(smoothing) == 5:
-            try: mileage_change = (int(mileage[-1]) - int(mileage[-6])) / 5
-            except:
-                try: mileage_change = (int(mileage[-1]) - int(mileage[-5])) / 4
-                except:
-                    try: mileage_change = (int(mileage[-1]) - int(mileage[-4])) / 3
-                    except: 
-                        try: mileage_change = (int(mileage[-1]) - int(mileage[-3])) / 2
-                        except: 
-                            try: mileage_change = int(mileage[-1]) - int(mileage[-2])
-                            except: pass
-
-        print(mileage_change)
+        if smoothing == '3':
+            mileage_change = mileage_three(mileage)
+        elif smoothing == '5':
+            mileage_change = mileage_five(mileage)
+        else:
+            mileage_change = mileage_one(mileage)
 
         data.append({"x": date_output, "y": mileage_change})
 
         if scale == 'instance':
             labels.append(date_output)
 
-        if min == 0:
-            min = date
+    data.pop(0)
 
-    print(mileage)
-
-    max = date
+    if smoothing == 'all':
+        data3 = mileage_all(all_data, 3)
+        data3.pop(0)
+        data5 = mileage_all(all_data, 5)
+        data5.pop(0)
 
     if scale == 'date':
-        while min != max:
-            labels.append(min.strftime('%Y-%m-%d'))
-            temp = min + datetime.timedelta(days=1)
-            min = temp
-        labels.append(date_output)
+        labels = get_labels(min, max, data)
+    else:
+        labels.pop(0)
 
-    return [labels, data]
+    return [labels, data, data3, data5]
+
+def get_MPG(current_user, vehicle, scale, smoothing):
+    all_data = fetch_records_graph(current_user, vehicle)
+    labels = []
+    data = []
+    data3 = []
+    data5 = []
+    min = 0
+    max = 0
+    mileage = []
+    litres = []
+    mpg = 0
+
+    for line in all_data:
+        date_output = str(line.date)
+        mileage.append(int(line.mileage))
+        litres.append(int(line.litres))
+
+        if smoothing == '3':
+            mpg = mpg_three(mileage, litres)
+        elif smoothing == '5':
+            mpg = mpg_five(mileage, litres)
+        else:
+            mpg = mpg_one(mileage, litres)
+
+        data.append({"x": date_output, "y": mpg})
+
+        if scale == 'instance':
+            labels.append(date_output)
+
+    data.pop(0)
+
+    if smoothing == 'all':
+        data3 = mpg_all(all_data, 3)
+        data3.pop(0)
+        data5 = mpg_all(all_data, 5)
+        data5.pop(0)
+
+    if scale == 'date':
+        labels = get_labels(min, max, data)
+    else:
+        labels.pop(0)
+
+    return [labels, data, data3, data5]
 
 def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
-    all_data = fetch_records(current_user, vehicle)
+    all_data = fetch_records_graph(current_user, vehicle)
     labels = []
     data = []
     temp = 1.5
@@ -105,8 +122,7 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
         c = update_ecb_file()
 
     for line in all_data:
-        date_0 = datetime.datetime.strptime(str(line.date), '%Y-%m-%d')
-        date_1 = date_0 + datetime.timedelta(days=1)
+        date_1 = datetime.strptime(str(line.date), '%Y-%m-%d') + timedelta(days=1)
         date_output = str(line.date)
         try: 
             if int(line.cost)/(int(line.litres)) != 0:
@@ -124,28 +140,30 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
             if labels[-1] == labels[-2]:
                 date_output = str(date_1.strftime('%Y-%m-%d'))
                 if date_output == labels[-2]:
-                    date_output = str(date_1.strftime('%Y-%m-%d') + datetime.timedelta(days=1))
+                    date_output = str(date_1.strftime('%Y-%m-%d') + timedelta(days=1))
         except: pass
 
         data.append({'x': date_output, 'y': temp, 'currency': line.currency})
 
-        if min == 0:
-            min = date_0
-
     try: del labels[-1]
     except: pass
 
-    max = date_0
-
     if scale == 'date':
-        while min != max:
-            labels.append(min.strftime('%Y-%m-%d'))
-            temp = min + datetime.timedelta(days=1)
-            min = temp
-        labels.append(min.strftime('%Y-%m-%d'))
+        labels = get_labels(min, max, data)
     else: labels.append(date_output)
 
     if inflation_con == 'Y':
         data = inflation_convert(data, currency_con)
 
     return [labels, data]
+
+def get_labels(min, max, data):
+    labels = []
+    min = datetime.strptime(data[0]['x'], '%Y-%m-%d')
+    max = datetime.strptime(data[-1]['x'], '%Y-%m-%d')
+    while min != max:
+        labels.append(min.strftime('%Y-%m-%d'))
+        temp = min + timedelta(days=1)
+        min = temp
+    labels.append(min.strftime('%Y-%m-%d'))
+    return labels

@@ -1,11 +1,7 @@
 from flask import request
 from .models import Record
 from . import db
-from .currency_converter import update_ecb_file
-from .inflation_converter import inflation_convert
 import datetime
-
-from os import path
 
 def get_vehicles(current_user):
     try:
@@ -102,8 +98,6 @@ def int_convert(input):
     return output
 
 def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'DESC'):
-    temp = f'Record.{column}'
-
     if vehicle == '*' and column == 'id':
         records = Record.query.filter_by(user_id = current_user.id).all()
     elif vehicle != '*' and column == 'id':
@@ -120,6 +114,9 @@ def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'DESC'):
         table.reverse()
 
     return table
+
+def fetch_records_graph(current_user, vehicle):
+    return Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
 
 def delete_record(current_user, records):
     line_n = 0
@@ -141,6 +138,3 @@ def has_foreign_currency(current_user, vehicle):
     if values.__len__() > 0:
         return 'Y'
     return 'N'
-
-def fetch_records(current_user, vehicle):
-    return Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
