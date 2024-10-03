@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
 from .database import post_record, get_vehicles, fetch_records, delete_record, has_foreign_currency
-from .graphing import get_date_mileage, get_fuel_cost, get_per_fill
+from .graphing import get_date_mileage, get_fuel_cost, get_per_fill, get_MPG
 from .csv_things import allowed_file, read_csv, csv_setup
 
 views = Blueprint('views', __name__)
@@ -159,7 +159,31 @@ def mileage_per_fill():
 @views.route('/mpg-calculator', methods=['GET', 'POST'])
 @login_required
 def mpg_calculator():
-    return render_template('404.html', user=current_user)
+    vehicles = get_vehicles(current_user)
+    for x in vehicles:
+        vehicle = x
+        break
+
+    scale = 'instance'
+    smoothing = '1'
+
+    if request.method == 'POST':
+        vehicle = request.form.get('vehicle')
+        scale = request.form.get('xScale')
+        smoothing = request.form.get('smoothing')
+    
+    data = get_MPG(current_user, vehicle, scale, smoothing)
+    
+    return render_template('mileage_per_fill.html',
+                           user=current_user,
+                           vehicle = vehicle,
+                           vehicles = vehicles,
+                           scale = scale,
+                           smoothing = smoothing,
+                           labels = data[0],
+                           data = data[1],
+                           data3 = data[2],
+                           data5 = data[3])
 
 @views.route('/fuel-cost', methods=['GET', 'POST'])
 @login_required
