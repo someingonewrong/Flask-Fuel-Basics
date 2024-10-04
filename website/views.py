@@ -204,7 +204,7 @@ def fuel_cost():
         try: currency_con = request.form.get('currencyCon')
         except: currency_con = 'N'
         inflation_con = request.form.get('inflationCon')
-    
+
     foreign_currency = has_foreign_currency(current_user, vehicle)
 
     data = get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con)
@@ -216,7 +216,7 @@ def fuel_cost():
                            scale = scale,
                            currency_con = currency_con,
                            foreign_currency = foreign_currency,
-                           inflation_con = 'N',
+                           inflation_con = inflation_con,
                            labels = data[0],
                            all_data = data[1])
 

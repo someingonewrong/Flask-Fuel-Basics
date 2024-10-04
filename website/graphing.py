@@ -118,8 +118,9 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
     min = 0
     max = 0
 
-    if currency_con == 'Y':
+    if currency_con == 'Y' or inflation_con == 'Y':
         c = update_ecb_file()
+        currency_con = 'Y'
 
     for line in all_data:
         date_1 = datetime.strptime(str(line.date), '%Y-%m-%d') + timedelta(days=1)
@@ -153,7 +154,7 @@ def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
     else: labels.append(date_output)
 
     if inflation_con == 'Y':
-        data = inflation_convert(data, currency_con)
+        data = inflation_convert(data)
 
     return [labels, data]
 
