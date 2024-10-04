@@ -36,7 +36,7 @@
         <p>
             Inflation Convertion: &emsp;&emsp;
             <select name="inflationCon" id="inflationCon">
-                {% if inflation_on == 'Y' %}
+                {% if inflation_con == 'Y' %}
                     <option value="N">N</option>
                     <option value="Y" selected>Y</option>
                 {% else %}
@@ -49,7 +49,7 @@
             <p>
                 Currency Convertion: &emsp;&emsp;
                 <select name="currencyCon" id="currencyCon">
-                    {% if currency_con == 'Y' %}
+                    {% if currency_con == 'Y' or inflation_con == 'Y' %}
                         <option value="N">N</option>
                         <option value="Y" selected>Y</option>
                     {% else %}
