@@ -18,10 +18,18 @@ def get_vehicles(current_user):
 
 def post_record(current_user, vehicles = []):
     date_test = request.form.get('date').split('-')
+    vehicle = request.form.get('vehicle')
     try: date_convert = datetime.date(int(date_test[0]), int(date_test[1]), int(date_test[2]))
     except: date_convert = datetime.date.today()
 
-    record = Record(vehicle = request.form.get('vehicle'),
+    if vehicle in vehicles:
+        fuel_query = Record.query.filter_by(user_id = current_user.id, vehicle = vehicle).first()
+        fuel = fuel_query.fuel
+    else:
+        fuel = request.form.get('fuel')
+
+    record = Record(vehicle = vehicle,
+                    fuel = fuel,
                     date = date_convert,
                     mileage = request.form.get('mileage'),
                     litres = request.form.get('litres'),
@@ -108,7 +116,7 @@ def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'DESC'):
         records = Record.query.filter_by(user_id = current_user.id, vehicle = vehicle).order_by(Record.__dict__[column]).all()
     table = []
     for record in records:
-        table.append([record.id, record.vehicle, record.date, record.mileage, record.litres, record.cost, record.currency, record.user_id, record.date_uploaded])
+        table.append([record.id, record.vehicle, record.fuel, record.date, record.mileage, record.litres, record.cost, record.currency, record.user_id, record.date_uploaded])
 
     if updown != 'ASC':
         table.reverse()
@@ -117,6 +125,9 @@ def fetch_records(current_user, vehicle = '*', column = 'id', updown = 'DESC'):
 
 def fetch_records_graph(current_user, vehicle):
     return Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle).order_by(Record.mileage).all()
+
+def fetch_fuel_records_graph(current_user, fuel):
+    return Record.query.filter(Record.user_id == current_user.id, Record.fuel == fuel).order_by(Record.date).all()
 
 def delete_record(current_user, records):
     line_n = 0
@@ -133,8 +144,14 @@ def delete_record(current_user, records):
 def find_record(current_user, id):
     return Record.query.filter(Record.user_id == current_user.id, Record.id == id).all()[0]
 
-def has_foreign_currency(current_user, vehicle):
+def has_foreign_currency_vehicle(current_user, vehicle):
     values = Record.query.filter(Record.user_id == current_user.id, Record.vehicle == vehicle, Record.currency != 'GBP').order_by(Record.currency).all()
+    if values.__len__() > 0:
+        return 'Y'
+    return 'N'
+
+def has_foreign_currency_fuel(current_user, fuel):
+    values = Record.query.filter(Record.user_id == current_user.id, Record.fuel == fuel, Record.currency != 'GBP').order_by(Record.currency).all()
     if values.__len__() > 0:
         return 'Y'
     return 'N'

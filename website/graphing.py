@@ -1,6 +1,6 @@
 from .currency_converter import update_ecb_file
 from .inflation_converter import inflation_convert
-from .database import fetch_records_graph
+from .database import fetch_records_graph, fetch_fuel_records_graph
 from .smoothing import mileage_one, mileage_three, mileage_five, mileage_all, mpg_one, mpg_three, mpg_five, mpg_all
 from datetime import datetime
 from datetime import timedelta
@@ -111,7 +111,10 @@ def get_MPG(current_user, vehicle, scale, smoothing):
     return [labels, data, data3, data5]
 
 def get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con):
-    all_data = fetch_records_graph(current_user, vehicle)
+    if vehicle == 'diesel' or vehicle == 'petrol':
+        all_data = fetch_fuel_records_graph(current_user, vehicle)
+    else:
+        all_data = fetch_records_graph(current_user, vehicle)
     labels = []
     data = []
     temp = 1.5

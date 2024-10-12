@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 class Record(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     vehicle = db.Column(db.String)
+    fuel = db.Column(db.String)
     date = db.Column(db.Date)
     mileage = db.Column(db.Integer)
     litres = db.Column(db.Integer)
@@ -12,6 +13,17 @@ class Record(db.Model):
     currency = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     date_uploaded = db.Column(db.DateTime(timezone=True), default=func.now())
+
+# , db.ForeignKey('vehicles.vehicle')
+
+# class Vehicles(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     vehicle = db.Column(db.String)
+#     reg = db.Column(db.String, unique=True)
+#     fuel = db.Column(db.String)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     records = db.relationship('Record')
+#     vehicle_created = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

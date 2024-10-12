@@ -6,7 +6,7 @@
             table {
             font-family: arial, sans-serif;
             border-collapse: collapse;
-            width: 750px;
+            width: 800px;
             }
             
             td, th {
@@ -92,6 +92,7 @@
                     <th>Select <input type="checkbox" onclick="toggle(this);" /></th>
                     <th>ID</th>
                     <th>Vehicle</th>
+                    <th>Fuel Type</th>
                     <th>Date</th>
                     <th>Mileage</th>
                     <th>Litres</th>
@@ -111,6 +112,7 @@
                             <td>{{line[4]}}</td>
                             <td>{{line[5]}}</td>
                             <td>{{line[6]}}</td>
+                            <td>{{line[7]}}</td>
                             <td>{{line[8]}}</td>
                         </tr>
                     {% endfor %}
