@@ -74,7 +74,8 @@ def view_records():
         column = request.form.get('column')
         updown = request.form.get('updown')
         if 'vehicle' in request.form:
-            table = fetch_records(current_user, vehicle=vehicle, column=column, updown=updown)
+            print(column, updown, vehicle)
+            table = fetch_records(current_user, vehicle, column, updown)
     else:
         table = fetch_records(current_user, '*', 'id', 'DESC')
         
