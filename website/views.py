@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, make_response
 from flask_login import login_required, current_user
-from .database import post_record, get_vehicles, fetch_records, delete_record, has_foreign_currency
+from .database import post_record, get_vehicles, fetch_records, delete_record, has_foreign_currency_vehicle, has_foreign_currency_fuel
 from .graphing import get_date_mileage, get_fuel_cost, get_per_fill, get_MPG
 from .csv_things import allowed_file, read_csv, csv_setup
 
@@ -62,7 +62,7 @@ def import_csv():
 @views.route('/view-records', methods=['GET', 'POST'])
 @login_required
 def view_records():
-    columns = ['id', 'vehicle', 'date', 'mileage', 'litres', 'cost', 'currency', 'user_id', 'date_uploaded']
+    columns = ['id', 'vehicle', 'fuel', 'date', 'mileage', 'litres', 'cost', 'currency', 'user_id', 'date_uploaded']
     vehicles = get_vehicles(current_user)
 
     vehicle = 'all'
@@ -205,7 +205,7 @@ def fuel_cost():
         except: currency_con = 'N'
         inflation_con = request.form.get('inflationCon')
 
-    foreign_currency = has_foreign_currency(current_user, vehicle)
+    foreign_currency = has_foreign_currency_vehicle(current_user, vehicle)
 
     data = get_fuel_cost(current_user, vehicle, scale, currency_con, inflation_con)
     
@@ -213,6 +213,35 @@ def fuel_cost():
                            user=current_user,
                            vehicle = vehicle,
                            vehicles = vehicles,
+                           scale = scale,
+                           currency_con = currency_con,
+                           foreign_currency = foreign_currency,
+                           inflation_con = inflation_con,
+                           labels = data[0],
+                           all_data = data[1])
+
+@views.route('/all-fuel-cost', methods=['GET', 'POST'])
+@login_required
+def all_fuel_cost():
+    fuel = 'petrol'
+    scale = 'date'
+    currency_con = 'Y'
+    inflation_con = 'N'
+
+    if request.method == 'POST':
+        fuel = request.form.get('fuel')
+        scale = request.form.get('xScale')
+        try: currency_con = request.form.get('currencyCon')
+        except: currency_con = 'Y'
+        inflation_con = request.form.get('inflationCon')
+
+    foreign_currency = has_foreign_currency_fuel(current_user, fuel)
+
+    data = get_fuel_cost(current_user, fuel, scale, currency_con, inflation_con)
+    
+    return render_template('all_fuel_cost.html',
+                           user=current_user,
+                           fuel = fuel,
                            scale = scale,
                            currency_con = currency_con,
                            foreign_currency = foreign_currency,

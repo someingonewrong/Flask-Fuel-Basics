@@ -11,8 +11,9 @@ This is my basic project to understand how Flask works and learn programming. So
 - ~~Import and export funtion of a CSV file.~~
 - ~~Remove sql query page.~~
 - ~~Create a way to remove records.~~
+- ~~MPG calculator and all that other stuff.~~
+- ~~Currency converter.~~
 - Create a page to view the data for each vehicle.
 - Make lots of pretty graphs.
-- MPG calculator and all that other stuff.
-- Currency converter.
 - Create admin section to manage all the user and records.
+- .Gov API to fetch vehicle data

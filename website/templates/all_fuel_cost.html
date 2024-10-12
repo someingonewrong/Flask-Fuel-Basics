@@ -1,0 +1,110 @@
+{% extends "base.html" %} 
+{% block title %}All Fuel Cost{% endblock %}
+
+{% block head_ext %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+{% endblock %}
+
+{% block content%}
+
+    <h1>All Fuel Cost</h1>
+    <form method="post">
+        <p>
+            Fuel Type: &emsp;&emsp;&emsp;
+            <select name="fuel" id="fuel">
+                {% if fuel == 'petrol' %}
+                    <option value="petrol" selected>petrol</option>
+                    <option value="diesel">diesel</option>
+                {% else %}
+                    <option value="petrol">petrol</option>
+                    <option value="diesel" selected>diesel</option>
+                {% endif %}
+            </select>
+        </p>
+        <p>
+            X Axis Scale: &emsp;
+            <select name="xScale" id="xScale">
+                {% if scale == 'date' %}
+                    <option value="date" selected>date</option>
+                    <option value="instance">instance</option>
+                {% else %}
+                    <option value="date">date</option>
+                    <option value="instance" selected>instance</option>
+                {% endif %}
+            </select>
+        </p>
+        <p>
+            Inflation Convertion: &emsp;&emsp;
+            <select name="inflationCon" id="inflationCon">
+                {% if inflation_con == 'Y' %}
+                    <option value="N">N</option>
+                    <option value="Y" selected>Y</option>
+                {% else %}
+                    <option value="N" selected>N</option>
+                    <option value="Y">Y</option>
+                {% endif %}
+            </select>
+        </p>
+        {% if foreign_currency == 'Y' %}
+            <p>
+                Currency Convertion: &emsp;&emsp;
+                <select name="currencyCon" id="currencyCon">
+                    {% if currency_con == 'Y' or inflation_con == 'Y' %}
+                        <option value="N">N</option>
+                        <option value="Y" selected>Y</option>
+                    {% else %}
+                        <option value="N" selected>N</option>
+                        <option value="Y">Y</option>
+                    {% endif %}
+                </select>
+            </p>
+        {% endif %}
+        <p>
+            <button type="submit">Submit</button>
+        </p>
+    </form>
+
+    <br>
+        
+    <canvas id="myChart" style="width:100%"></canvas>
+
+    <script>
+        new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: {{ labels | safe }},
+                datasets: [{
+                    lineTension: 0,
+                    borderColor: "rgba(0,0,255,1)",
+                    data: {{ all_data | safe }}
+                }]
+            },
+            options: {
+                responsive: true,
+                elements: {
+                    line: {
+                        fill: false // Disables fill under the line
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: '£ per Litre'
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }]
+                },
+                legend: {
+                    display: false
+                }
+            }
+        });
+    </script>
+
+{% endblock %}
