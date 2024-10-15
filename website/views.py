@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from .database import post_record, get_vehicles, fetch_records, delete_record, has_foreign_currency_vehicle, has_foreign_currency_fuel
 from .graphing import get_date_mileage, get_fuel_cost, get_per_fill, get_MPG
 from .csv_things import allowed_file, read_csv, csv_setup
+from .api_query import search_reg
 
 views = Blueprint('views', __name__)
 
@@ -35,6 +36,25 @@ def new_vehicle():
             flash(result, category='error')
 
     return render_template('new_vehicle.html', user=current_user)
+
+@views.route('/search-vehicle', methods=['GET', 'POST'])
+@login_required
+def search_vehicle():
+    data = {'registrationNumber':'Registration Number',
+            'taxDueDate':'YYYY-MM-DD',
+            'motExpiryDate':'YYYY-MM-DD',
+            'make':'abcdef',
+            'yearOfManufacture':'YYYY',
+            'engineCapacity':1234,
+            'fuelType':'Petrol / Diesel', 
+            'wheelplan':'x Axle Rigid Body', 
+            'revenueWeight':'1234 Kg'}
+    
+
+    if request.method == 'POST':
+        data = search_reg(request.form.get('reg'))
+
+    return render_template('search_vehicle.html', user=current_user, data=data)
 
 @views.route('/import-csv', methods=['GET', 'POST'])
 @login_required

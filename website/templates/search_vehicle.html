@@ -1,0 +1,49 @@
+{% extends "base.html" %} 
+{% block title %}Search Vehicle{% endblock %}
+
+{% block content %}
+    <h1>Search Vehicle</h1>
+    <form method="post">
+        Registration:<br>
+        <input type="reg" id="reg" name="reg" placeholder="{{data['registrationNumber']}}"><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <br><br>
+
+    Reg: &emsp;&emsp;&emsp;
+    {% if data.registrationNumber is not defined %} NULL
+    {% else %} {{data.registrationNumber}} {% endif %} <br>
+
+    Tax Due: &emsp;
+    {% if data.taxDueDate is not defined %} NULL
+    {% else %} {{data.taxDueDate}} {% endif %} <br>
+
+    MOT Due: &emsp;
+    {% if data.motExpiryDate is not defined %} NULL
+    {% else %} {{data.motExpiryDate}} {% endif %} <br>
+    
+    Make: &emsp;&emsp;&emsp;
+    {% if data.make is not defined %} NULL
+    {% else %} {{data.make}} {% endif %} <br>
+    
+    Year: &emsp;&emsp;&emsp;
+    {% if data.yearOfManufacture is not defined %} NULL
+    {% else %} {{data.yearOfManufacture}} {% endif %} <br>
+    
+    CCs: &emsp;&emsp;&emsp;
+    {% if data.engineCapacity is not defined %} NULL
+    {% else %} {{data.engineCapacity}} {% endif %} <br>
+    
+    Fuel: &emsp;&emsp;&emsp;
+    {% if data.fuelType is not defined %} NULL
+    {% else %} {{data.fuelType}} {% endif %} <br>
+    
+    Axles: &emsp;&emsp;&emsp;
+    {% if data.wheelplan is not defined %} NULL
+    {% else %} {{data.wheelplan}} {% endif %} <br>
+    
+    Weight: &emsp;&emsp;
+    {% if data.revenueWeight is not defined %} NULL
+    {% else %} {{data.revenueWeight}} {% endif %}
+{% endblock %}
