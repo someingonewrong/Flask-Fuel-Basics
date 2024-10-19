@@ -17,12 +17,13 @@ def read_csv(file, current_user):
     with io.TextIOWrapper(file, encoding='utf-8') as text_file:
 
         vehicle = file.filename.rsplit('.', 1)[0].lower()
+        fuel = request.form.get('fuel')
 
         try:
             if request.form.get('key') == 'key':
-                line_n = dict_csv(text_file, current_user, vehicle)
+                line_n = dict_csv(text_file, current_user, vehicle, fuel)
             else:
-                line_n = row_csv(text_file, current_user, vehicle)
+                line_n = row_csv(text_file, current_user, vehicle, fuel)
             db.session.commit()
             message = 'Added ' + str(line_n) + ' Rows'
         except:
@@ -30,7 +31,7 @@ def read_csv(file, current_user):
 
     return message
 
-def row_csv(text_file, current_user, vehicle):
+def row_csv(text_file, current_user, vehicle, fuel):
     reader = csv.reader(text_file, delimiter=',')
 
     line_n = 0
@@ -41,10 +42,7 @@ def row_csv(text_file, current_user, vehicle):
         try: len(temp_date[1])
         except: temp_date = line[0].split('/')
 
-        if len(temp_date[0]) == 4:
-            line_date = date(int(temp_date[0]), int(temp_date[1]), int(temp_date[2]))
-        else:
-            line_date = date(int(temp_date[2]), int(temp_date[1]), int(temp_date[0]))
+        line_date = date(int(temp_date[2])+2000, int(temp_date[1]), int(temp_date[0]))
 
         line_mileage = int(line[1].strip('p'))
         line_cost = int_convert(line[3])
@@ -53,6 +51,7 @@ def row_csv(text_file, current_user, vehicle):
         except: currency = 'GBP'
 
         record = Record(vehicle = vehicle,
+                fuel = fuel,
                 date = line_date,
                 mileage = line_mileage,
                 litres = line_litres,
@@ -64,7 +63,7 @@ def row_csv(text_file, current_user, vehicle):
     
     return line_n
 
-def dict_csv(text_file, current_user, vehicle):
+def dict_csv(text_file, current_user, vehicle, fuel):
     reader = csv.DictReader(text_file, delimiter=',')
 
     line_n = 0
@@ -87,6 +86,7 @@ def dict_csv(text_file, current_user, vehicle):
         except: currency = 'GBP'
 
         record = Record(vehicle = line_vehicle,
+                fuel = fuel,
                 date = line_date,
                 mileage = line_mileage,
                 litres = line_litres,

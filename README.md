@@ -17,3 +17,4 @@ This is my basic project to understand how Flask works and learn programming. So
 - Make lots of pretty graphs.
 - Create admin section to manage all the user and records.
 - .Gov API to fetch vehicle data
+- Vehicle group, Car, Van, Bike or other.
